@@ -17,7 +17,7 @@ const CategoryUI = {
                 <button class="category-btn ${this.currentFilter === 'all' ? 'active' : ''}" 
                         data-category="all">
                     <span class="category-icon">📋</span>
-                    <span class="category-name">전체</span>
+                    <span class="category-name">${window.i18n.t('all')}</span>
                     <span class="category-count">${totalItems}</span>
                     ${totalUnread > 0 ? `<span class="unread-badge">${totalUnread}</span>` : ''}
                 </button>
@@ -39,7 +39,7 @@ const CategoryUI = {
         html += `
             <button class="category-btn category-add-btn" id="addCategoryBtn">
                 <span class="category-icon">+</span>
-                <span class="category-name">카테고리 추가</span>
+                <span class="category-name">${window.i18n.t('addCategory')}</span>
             </button>
         `;
 
@@ -89,16 +89,16 @@ const CategoryUI = {
         modal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h3>새 카테고리 추가</h3>
+                    <h3>${window.i18n.t('addNewCategory')}</h3>
                     <button class="btn-close">×</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>카테고리 이름</label>
-                        <input type="text" id="categoryName" placeholder="카테고리 이름을 입력하세요" maxlength="20">
+                        <label>${window.i18n.t('categoryName')}</label>
+                        <input type="text" id="categoryName" placeholder="${window.i18n.t('enterCategoryNamePlaceholder')}" maxlength="20">
                     </div>
                     <div class="form-group">
-                        <label>아이콘</label>
+                        <label>${window.i18n.t('icon')}</label>
                         <div class="icon-selector">
                             ${Categories.iconOptions.map(icon => 
                                 `<button type="button" class="icon-option" data-icon="${icon}">${icon}</button>`
@@ -106,7 +106,7 @@ const CategoryUI = {
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>색상</label>
+                        <label>${window.i18n.t('color')}</label>
                         <div class="color-selector">
                             ${Categories.colorOptions.map(color => 
                                 `<button type="button" class="color-option" data-color="${color}" style="background-color: ${color}"></button>`
@@ -115,8 +115,8 @@ const CategoryUI = {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancelCategoryBtn">취소</button>
-                    <button class="btn btn-primary" id="saveCategoryBtn">저장</button>
+                    <button class="btn btn-secondary" id="cancelCategoryBtn">${window.i18n.t('cancel')}</button>
+                    <button class="btn btn-primary" id="saveCategoryBtn">${window.i18n.t('save')}</button>
                 </div>
             </div>
         `;
@@ -162,7 +162,7 @@ const CategoryUI = {
             const name = modal.querySelector('#categoryName').value.trim();
             
             if (!name) {
-                UI.showToast('카테고리 이름을 입력해주세요', 'error');
+                UI.showToast(window.i18n.t('enterCategoryName'), 'error');
                 return;
             }
 
@@ -196,7 +196,7 @@ const CategoryUI = {
         modal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h3>카테고리 변경</h3>
+                    <h3>${window.i18n.t('changeCategory')}</h3>
                     <button class="btn-close">×</button>
                 </div>
                 <div class="modal-body">
@@ -247,11 +247,11 @@ const CategoryUI = {
         modal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h3>카테고리 선택</h3>
+                    <h3>${window.i18n.t('selectCategory')}</h3>
                     <button class="btn-close">×</button>
                 </div>
                 <div class="modal-body">
-                    <p class="modal-description">새 항목을 어느 카테고리에 저장하시겠습니까?</p>
+                    <p class="modal-description">${window.i18n.t('selectCategoryForNewItem')}</p>
                     <div class="category-list">
                         ${categories.map(category => `
                             <button class="category-select-item" 
@@ -308,18 +308,18 @@ const CategoryUI = {
         modal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h3>이미 저장된 페이지</h3>
+                    <h3>${window.i18n.t('alreadySavedPage')}</h3>
                     <button class="btn-close">×</button>
                 </div>
                 <div class="modal-body">
-                    <p class="modal-description">이 페이지는 이미 저장되어 있습니다.</p>
+                    <p class="modal-description">${window.i18n.t('pageAlreadySaved')}</p>
                     <div class="existing-item-info">
                         <div class="item-title">${existingItem.title}</div>
                         <div class="current-category">
-                            현재 카테고리: ${Categories.getCategoryById(await Categories.loadCategories(), existingItem.categoryId || 'uncategorized').name}
+                            ${window.i18n.t('currentCategory')}: ${Categories.getCategoryById(await Categories.loadCategories(), existingItem.categoryId || 'uncategorized').name}
                         </div>
                     </div>
-                    <p class="modal-description">카테고리를 변경하시겠습니까?</p>
+                    <p class="modal-description">${window.i18n.t('changeCategoryQuestion')}</p>
                     <div class="category-list">
                         ${categories.map(category => `
                             <button class="category-select-item ${(existingItem.categoryId || 'uncategorized') === category.id ? 'selected' : ''}" 
@@ -334,8 +334,8 @@ const CategoryUI = {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancelBtn">취소</button>
-                    <button class="btn btn-primary" id="updateCategoryBtn">카테고리 변경</button>
+                    <button class="btn btn-secondary" id="cancelBtn">${window.i18n.t('cancel')}</button>
+                    <button class="btn btn-primary" id="updateCategoryBtn">${window.i18n.t('changeCategory')}</button>
                 </div>
             </div>
         `;
@@ -400,10 +400,33 @@ const CategoryUI = {
     async showReadItemOverwriteModal(existingItem, categories) {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
+        
+        // Use defensive check for i18n object
+        const i18n = window.i18n && typeof window.i18n.t === 'function' ? window.i18n : {
+            t: (key) => {
+                // Fallback text if i18n is not available
+                const fallbacks = {
+                    'alreadyReadPage': 'Already Read Page',
+                    'currentCategory': 'Current Category',
+                    'markedAsRead': 'Marked as Read',
+                    'pageAlreadyMarkedRead': 'This page is already marked as read.',
+                    'whatWouldYouLike': 'What would you like to do?',
+                    'saveNew': 'Save as New',
+                    'saveNewDescription': 'Delete existing item and save as new "unread" item',
+                    'cancel': 'Cancel',
+                    'changeCategoryOnly': 'Change Category Only'
+                };
+                return fallbacks[key] || key;
+            }
+        };
+        
+        const categoryObj = Categories.getCategoryById(categories, existingItem.categoryId || 'uncategorized');
+        const categoryName = categoryObj ? categoryObj.name : i18n.t('uncategorized');
+        
         modal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h3>이미 읽은 페이지</h3>
+                    <h3>${i18n.t('alreadyReadPage')}</h3>
                     <button class="btn-close">×</button>
                 </div>
                 <div class="modal-body">
@@ -413,22 +436,22 @@ const CategoryUI = {
                             ${existingItem.title}
                         </div>
                         <div class="current-category">
-                            현재 카테고리: ${Categories.getCategoryById(categories, existingItem.categoryId || 'uncategorized').name}
+                            ${i18n.t('currentCategory')}: ${categoryName}
                         </div>
                         <div class="read-date">
-                            읽음으로 표시됨
+                            ${i18n.t('markedAsRead')}
                         </div>
                     </div>
-                    <p class="modal-description warning">이 페이지는 이미 읽음으로 표시되어 있습니다.</p>
-                    <p class="modal-description">어떻게 하시겠습니까?</p>
+                    <p class="modal-description warning">${i18n.t('pageAlreadyMarkedRead')}</p>
+                    <p class="modal-description">${i18n.t('whatWouldYouLike')}</p>
                     <p class="modal-description small-text">
-                        <strong>새로 저장:</strong> 기존 항목이 삭제되고 새로운 "읽지않음" 항목으로 저장됩니다.
+                        <strong>${i18n.t('saveNew')}:</strong> ${i18n.t('saveNewDescription')}
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancelBtn">취소</button>
-                    <button class="btn btn-warning" id="overwriteBtn">새로 저장</button>
-                    <button class="btn btn-primary" id="changeCategoryBtn">카테고리만 변경</button>
+                    <button class="btn btn-secondary" id="cancelBtn">${i18n.t('cancel')}</button>
+                    <button class="btn btn-warning" id="overwriteBtn">${i18n.t('saveNew')}</button>
+                    <button class="btn btn-primary" id="changeCategoryBtn">${i18n.t('changeCategoryOnly')}</button>
                 </div>
             </div>
         `;
@@ -478,17 +501,17 @@ const CategoryUI = {
         modal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h3>카테고리 변경</h3>
+                    <h3>${window.i18n.t('changeCategory')}</h3>
                     <button class="btn-close">×</button>
                 </div>
                 <div class="modal-body">
                     <div class="existing-item-info">
                         <div class="item-title">${existingItem.title}</div>
                         <div class="current-category">
-                            현재 카테고리: ${Categories.getCategoryById(categories, existingItem.categoryId || 'uncategorized').name}
+                            ${window.i18n.t('currentCategory')}: ${Categories.getCategoryById(categories, existingItem.categoryId || 'uncategorized').name}
                         </div>
                     </div>
-                    <p class="modal-description">새 카테고리를 선택해주세요:</p>
+                    <p class="modal-description">${window.i18n.t('selectNewCategory')}:</p>
                     <div class="category-list">
                         ${categories.map(category => `
                             <button class="category-select-item ${(existingItem.categoryId || 'uncategorized') === category.id ? 'selected' : ''}" 
@@ -503,8 +526,8 @@ const CategoryUI = {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancelBtn">취소</button>
-                    <button class="btn btn-primary" id="updateCategoryBtn">카테고리 변경</button>
+                    <button class="btn btn-secondary" id="cancelBtn">${window.i18n.t('cancel')}</button>
+                    <button class="btn btn-primary" id="updateCategoryBtn">${window.i18n.t('changeCategory')}</button>
                 </div>
             </div>
         `;
@@ -568,10 +591,10 @@ const CategoryUI = {
 
     renderCategoryBadge(categoryId, itemId) {
         if (!categoryId || categoryId === 'uncategorized') {
-            // 카테고리가 없는 경우 카테고리 추가 버튼 표시
-            return `<span class="category-badge category-add" data-category="uncategorized" data-item-id="${itemId}" title="클릭하여 카테고리를 추가할 수 있습니다.">
+            // Show add category button when no category is assigned
+            return `<span class="category-badge category-add" data-category="uncategorized" data-item-id="${itemId}" title="${window.i18n.t('clickToAddCategory')}">
                 <span class="category-icon">+</span>
-                <span class="category-name">카테고리 추가</span>
+                <span class="category-name">${window.i18n.t('addCategory')}</span>
             </span>`;
         }
 
@@ -590,15 +613,15 @@ const CategoryUI = {
             
             console.log('Processing badge:', categoryId, itemId);
             
-            // 카테고리 추가 버튼 처리
+            // Handle add category button
             if (categoryId === 'uncategorized' || !categoryId) {
                 badge.classList.add('category-add');
-                badge.innerHTML = `<span class="category-icon">+</span><span class="category-name">카테고리 추가</span>`;
-                badge.title = '클릭하여 카테고리를 추가할 수 있습니다.';
+                badge.innerHTML = `<span class="category-icon">+</span><span class="category-name">${window.i18n.t('addCategory')}</span>`;
+                badge.title = window.i18n.t('clickToAddCategory');
                 return;
             }
             
-            // 기존 카테고리 배지 처리
+            // Handle existing category badge
             const category = Categories.getCategoryById(categories, categoryId);
             if (!category) {
                 console.log('Category not found:', categoryId);
@@ -610,7 +633,7 @@ const CategoryUI = {
             badge.style.color = category.color;
             badge.style.borderColor = category.color;
             badge.style.backgroundColor = `${category.color}15`; // Add slight color tint
-            badge.title = `카테고리: ${category.name}\n클릭하여 카테고리를 변경할 수 있습니다.`;
+            badge.title = `${window.i18n.t('category')}: ${category.name}\n${window.i18n.t('clickToChangeCategory')}`;
         });
     }
 };

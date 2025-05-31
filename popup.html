@@ -10,16 +10,16 @@
     <div class="app">
         <!-- Header -->
         <header class="header">
-            <h1>📖 Read Later</h1>
+            <h1 data-i18n="appTitle">📖 Read Later</h1>
             <div class="header-actions">
-                <button id="settingsBtn" class="btn-settings" title="설정">⚙️</button>
-                <button id="addPage" class="btn-add">추가</button>
+                <button id="settingsBtn" class="btn-settings" data-i18n="settings" title="설정">⚙️</button>
+                <button id="addPage" class="btn-add" data-i18n="addPage">추가</button>
             </div>
         </header>
 
         <!-- Search -->
         <div class="search">
-            <input type="text" id="search" placeholder="검색..." autocomplete="off">
+            <input type="text" id="search" data-i18n-placeholder="search" placeholder="검색..." autocomplete="off">
         </div>
 
         <!-- Category Filter -->
@@ -35,57 +35,75 @@
 
         <!-- Empty -->
         <div id="empty" class="empty" style="display: none;">
-            <p>저장된 항목이 없습니다</p>
+            <p data-i18n="emptyState">저장된 항목이 없습니다</p>
         </div>
 
         <!-- Settings Panel -->
         <div id="settingsPanel" class="settings-panel" style="display: none;">
             <div class="settings-header">
-                <h2>설정</h2>
-                <button id="closeSettings" class="btn-close">✕</button>
+                <h2 data-i18n="settingsTitle">설정</h2>
+                <button id="closeSettings" class="btn-close" data-i18n="close">✕</button>
             </div>
             <div class="settings-content">
                 <div class="setting-item">
-                    <label class="setting-label">테마</label>
+                    <label class="setting-label" data-i18n="theme">테마</label>
                     <div class="theme-selector">
                         <button id="themeAuto" class="theme-btn active" data-theme="auto">
                             <span class="theme-icon">🌓</span>
-                            <span>자동</span>
+                            <span data-i18n="themeAuto">자동</span>
                         </button>
                         <button id="themeLight" class="theme-btn" data-theme="light">
                             <span class="theme-icon">☀️</span>
-                            <span>라이트</span>
+                            <span data-i18n="themeLight">라이트</span>
                         </button>
                         <button id="themeDark" class="theme-btn" data-theme="dark">
                             <span class="theme-icon">🌙</span>
-                            <span>다크</span>
+                            <span data-i18n="themeDark">다크</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <label class="setting-label" data-i18n="language">언어</label>
+                    <div class="language-selector">
+                        <button id="languageAuto" class="language-btn active" data-language="auto">
+                            <span class="language-icon">🌐</span>
+                            <span data-i18n="languageAuto">시스템 설정</span>
+                        </button>
+                        <button id="languageKorean" class="language-btn" data-language="ko">
+                            <span class="language-icon">🇰🇷</span>
+                            <span data-i18n="languageKorean">한국어</span>
+                        </button>
+                        <button id="languageEnglish" class="language-btn" data-language="en">
+                            <span class="language-icon">🇺🇸</span>
+                            <span data-i18n="languageEnglish">English</span>
                         </button>
                     </div>
                 </div>
                 
                 <div class="setting-item">
-                    <label class="setting-label">자동 삭제</label>
+                    <label class="setting-label" data-i18n="autoDelete">자동 삭제</label>
                     <div class="auto-delete-settings">
                         <div class="setting-row">
                             <label class="checkbox-container">
                                 <input type="checkbox" id="autoDeleteEnabled">
                                 <span class="checkmark"></span>
-                                읽은 항목 자동 삭제
+                                <span data-i18n="autoDeleteEnabled">읽은 항목 자동 삭제</span>
                             </label>
                         </div>
                         <div class="setting-row" id="autoDeleteTimeRow" style="display: none;">
-                            <label for="autoDeleteValue">삭제 기간:</label>
+                            <label for="autoDeleteValue" data-i18n="deletePeriod">삭제 기간:</label>
                             <div class="time-input-group">
                                 <input type="number" id="autoDeleteValue" min="1" max="9999" value="30">
                                 <div class="time-unit-buttons">
-                                    <button type="button" class="unit-btn" data-unit="minutes">분</button>
-                                    <button type="button" class="unit-btn" data-unit="hours">시간</button>
-                                    <button type="button" class="unit-btn active" data-unit="days">일</button>
+                                    <button type="button" class="unit-btn" data-unit="minutes" data-i18n="minutes">분</button>
+                                    <button type="button" class="unit-btn" data-unit="hours" data-i18n="hours">시간</button>
+                                    <button type="button" class="unit-btn active" data-unit="days" data-i18n="days">일</button>
                                 </div>
-                                <button type="button" id="saveAutoDeleteSettings" class="btn-save-settings">저장</button>
+                                <button type="button" id="saveAutoDeleteSettings" class="btn-save-settings" data-i18n="save">저장</button>
                             </div>
                         </div>
-                        <div class="setting-description">
+                        <div class="setting-description" data-i18n="autoDeleteDescription">
                             읽음으로 표시된 항목을 지정된 기간 후 자동으로 삭제합니다.
                         </div>
                     </div>
@@ -94,6 +112,7 @@
         </div>
     </div>
 
+    <script src="src/i18n.js"></script>
     <script src="src/storage.js"></script>
     <script src="src/categories.js"></script>
     <script src="src/category-ui.js"></script>

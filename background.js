@@ -130,33 +130,33 @@ class ReadLaterBackground {
     }
 
     setupContextMenu() {
-        // 기존 메뉴 제거
+        // Remove existing menus
         chrome.contextMenus.removeAll(() => {
-            // 페이지 컨텍스트 메뉴
+            // Page context menu
             chrome.contextMenus.create({
                 id: 'addToReadingList',
-                title: '읽기 목록에 추가',
+                title: 'Add to Reading List',
                 contexts: ['page']
             });
 
-            // 링크 컨텍스트 메뉴
+            // Link context menu
             chrome.contextMenus.create({
                 id: 'addLinkToReadingList',
-                title: '링크를 읽기 목록에 추가',
+                title: 'Add Link to Reading List',
                 contexts: ['link']
             });
 
-            // 구분선
+            // Separator
             chrome.contextMenus.create({
                 id: 'separator',
                 type: 'separator',
                 contexts: ['page', 'link']
             });
 
-            // 읽기 목록 보기
+            // View reading list
             chrome.contextMenus.create({
                 id: 'viewReadingList',
-                title: '읽기 목록 보기',
+                title: 'View Reading List',
                 contexts: ['page', 'link']
             });
         });
@@ -178,19 +178,19 @@ class ReadLaterBackground {
 
     async addCurrentPageToList(tab) {
         try {
-            // 유효하지 않은 페이지 체크
+            // Check for invalid pages
             if (!tab.url || this.isRestrictedUrl(tab.url)) {
-                this.showNotification('이 페이지는 저장할 수 없습니다.');
+                this.showNotification('This page cannot be saved.');
                 return;
             }
 
             const result = await chrome.storage.local.get(['items']);
             const readingList = result.items || [];
 
-            // 중복 체크
+            // Check for duplicates
             const exists = readingList.some(item => item.url === tab.url);
             if (exists) {
-                this.showNotification('이미 저장된 페이지입니다.');
+                this.showNotification('Page already saved.');
                 return;
             }
 
@@ -206,11 +206,11 @@ class ReadLaterBackground {
             readingList.unshift(newItem);
             await chrome.storage.local.set({ items: readingList });
             
-            this.showNotification('페이지가 읽기 목록에 추가되었습니다!');
+            this.showNotification('Page added to reading list!');
             this.updateBadge();
         } catch (error) {
             console.error('Error adding page to reading list:', error);
-            this.showNotification('페이지 저장에 실패했습니다.');
+            this.showNotification('Failed to save page.');
         }
     }
 
@@ -219,14 +219,14 @@ class ReadLaterBackground {
             const result = await chrome.storage.local.get(['items']);
             const readingList = result.items || [];
 
-            // 중복 체크
+            // Check for duplicates
             const exists = readingList.some(item => item.url === linkUrl);
             if (exists) {
-                this.showNotification('이미 저장된 링크입니다.');
+                this.showNotification('Link already saved.');
                 return;
             }
 
-            // 링크의 제목을 가져오기 위해 페이지를 잠시 로드
+            // Get link title by briefly loading the page
             let linkTitle = linkUrl;
             try {
                 const response = await fetch(linkUrl, { method: 'HEAD' });
@@ -249,11 +249,11 @@ class ReadLaterBackground {
             readingList.unshift(newItem);
             await chrome.storage.local.set({ items: readingList });
             
-            this.showNotification('링크가 읽기 목록에 추가되었습니다!');
+            this.showNotification('Link added to reading list!');
             this.updateBadge();
         } catch (error) {
             console.error('Error adding link to reading list:', error);
-            this.showNotification('링크 저장에 실패했습니다.');
+            this.showNotification('Failed to save link.');
         }
     }
 

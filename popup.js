@@ -6,12 +6,34 @@ class ReadLaterApp {
     }
 
     async init() {
-        await this.load();
-        await Theme.init();
-        await CategoryUI.renderCategoryFilter();
-        this.setupEvents();
-        this.render();
-        this.updateBadge();
+        try {
+            await this.load();
+            await Theme.init();
+            
+            // Wait for i18n to be available and initialize
+            if (window.I18n && typeof window.I18n.init === 'function') {
+                await window.I18n.init();
+                console.log('I18n initialized successfully');
+            } else {
+                // Wait a bit longer and try again - sometimes script loading order can cause issues
+                await new Promise(resolve => setTimeout(resolve, 100));
+                if (window.I18n && typeof window.I18n.init === 'function') {
+                    await window.I18n.init();
+                    console.log('I18n initialized after retry');
+                } else {
+                    console.error('I18n module not available after retry');
+                    // Show warning but continue
+                    UI.showToast('Translation module not available, using default language', 'error');
+                }
+            }
+            
+            await CategoryUI.renderCategoryFilter();
+            this.setupEvents();
+            this.render();
+            this.updateBadge();
+        } catch (error) {
+            console.error('Error initializing app:', error);
+        }
     }
 
     async load() {
@@ -39,6 +61,19 @@ class ReadLaterApp {
                 const theme = e.currentTarget.getAttribute('data-theme');
                 Theme.setTheme(theme);
                 this.updateThemeButtons(theme);
+            });
+        });
+
+        // Language selection
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const language = e.currentTarget.getAttribute('data-language');
+                if (window.I18n && typeof window.I18n.setLanguage === 'function') {
+                    window.I18n.setLanguage(language);
+                    this.updateLanguageButtons(language);
+                    // Update count display with new language
+                    this.updateCountDisplay();
+                }
             });
         });
 
@@ -112,6 +147,11 @@ class ReadLaterApp {
         // Update theme buttons to reflect current theme
         this.updateThemeButtons(Theme.currentTheme);
         
+        // Update language buttons to reflect current language
+        if (window.I18n && window.I18n.currentLanguage) {
+            this.updateLanguageButtons(window.I18n.currentLanguage);
+        }
+        
         // Load and display auto-delete settings
         this.loadAutoDeleteSettings();
     }
@@ -131,12 +171,30 @@ class ReadLaterApp {
         });
     }
 
+    updateLanguageButtons(activeLanguage) {
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            const language = btn.getAttribute('data-language');
+            btn.classList.toggle('active', language === activeLanguage);
+        });
+    }
+
+    updateCountDisplay() {
+        const unread = this.items.filter(item => !item.read).length;
+        const countEl = document.getElementById('count');
+        if (countEl && window.i18n && typeof window.i18n.t === 'function') {
+            countEl.textContent = window.i18n.t('itemCount', {
+                total: this.items.length,
+                unread: unread
+            });
+        }
+    }
+
     async addCurrentPage() {
         try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             
             if (!tab.url || Utils.isRestrictedUrl(tab.url)) {
-                UI.showToast('이 페이지는 저장할 수 없습니다', 'error');
+                UI.showToast(window.i18n.t('cannotSavePage'), 'error');
                 return;
             }
 
@@ -152,14 +210,14 @@ class ReadLaterApp {
                     // User cancelled
                     return;
                 } else if (result === 'no-change') {
-                    UI.showToast('이미 저장된 페이지입니다', 'error');
+                    UI.showToast(window.i18n.t('alreadySaved'), 'error');
                     return;
                 } else if (result === 'overwrite') {
                     // User wants to save as new item - proceed with new item creation
                     // Fall through to the new item creation logic below
                 } else {
                     // Category was updated for existing item
-                    UI.showToast('카테고리가 변경되었습니다', 'success');
+                    UI.showToast(window.i18n.t('categoryChanged'), 'success');
                     await this.load();
                     this.render();
                     await CategoryUI.renderCategoryFilter();
@@ -204,7 +262,7 @@ class ReadLaterApp {
             }
         } catch (error) {
             console.error('Error adding page:', error);
-            UI.showToast('페이지 저장 중 오류가 발생했습니다', 'error');
+            UI.showToast(window.i18n.t('pageSaveError'), 'error');
         }
     }
 
@@ -221,6 +279,7 @@ class ReadLaterApp {
         if (result.success) {
             await this.load();
             this.render();
+            await CategoryUI.renderCategoryFilter(); // Update category filter badges
             this.updateBadge();
         }
     }
@@ -268,7 +327,7 @@ class ReadLaterApp {
         const enabled = document.getElementById('autoDeleteEnabled').checked;
         
         if (!enabled) {
-            UI.showToast('자동 삭제가 비활성화되어 있습니다', 'info');
+            UI.showToast(window.i18n.t('autoDeleteDisabled'), 'info');
             return;
         }
 
@@ -277,7 +336,7 @@ class ReadLaterApp {
         const unit = activeUnitBtn ? activeUnitBtn.dataset.unit : 'days';
         
         if (!value || value < 1) {
-            UI.showToast('올바른 시간 값을 입력해주세요', 'error');
+            UI.showToast(window.i18n.t('enterValidTime'), 'error');
             document.getElementById('autoDeleteValue').focus();
             return;
         }
@@ -294,13 +353,13 @@ class ReadLaterApp {
             });
             
             // 사용자에게 설정 완료 피드백
-            const unitName = unit === 'minutes' ? '분' : unit === 'hours' ? '시간' : '일';
-            UI.showToast(`자동 삭제 설정 저장됨: ${value}${unitName} 후 삭제`, 'success');
+            const unitName = window.i18n.t(`timeUnit_${unit}`);
+            UI.showToast(window.i18n.t('autoDeleteSettingsSaved', { value, unit: unitName }), 'success');
             
             console.log('📡 Auto-delete settings saved:', settings);
         } catch (error) {
             console.error('Error saving auto-delete settings:', error);
-            UI.showToast('설정 저장에 실패했습니다', 'error');
+            UI.showToast(window.i18n && window.i18n.t ? window.i18n.t('saveFailed') : '설정 저장에 실패했습니다', 'error');
         }
     }
 
@@ -320,13 +379,13 @@ class ReadLaterApp {
                     action: 'updateAutoDeleteScheduler',
                     settings: settings 
                 });
-                UI.showToast('자동 삭제가 비활성화되었습니다', 'info');
+                UI.showToast(window.i18n && window.i18n.t ? window.i18n.t('autoDeleteDisabled') : '자동 삭제가 비활성화되었습니다', 'info');
             } catch (error) {
                 console.error('Error requesting scheduler update:', error);
-                UI.showToast('설정 저장에 실패했습니다', 'error');
+                UI.showToast(window.i18n && window.i18n.t ? window.i18n.t('saveFailed') : '설정 저장에 실패했습니다', 'error');
             }
         } else {
-            UI.showToast('시간을 설정하고 저장 버튼을 클릭하세요', 'info');
+            UI.showToast(window.i18n && window.i18n.t ? window.i18n.t('autoDeleteClickSave') : '시간을 설정하고 저장 버튼을 클릭하세요', 'info');
         }
     }
 
@@ -346,13 +405,27 @@ class ReadLaterApp {
     }
 }
 
-// Initialize app
-const app = new ReadLaterApp();
-
-// Global functions for button handlers
-window.App = {
-    toggleRead: (id) => app.toggleRead(id),
-    deleteItem: (id) => app.deleteItem(id),
-    load: () => app.load(),
-    render: () => app.render()
-};
+// Initialize app when DOM content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if required modules are loaded
+    if (!window.I18n) {
+        console.error('Error: I18n module not loaded. Check script loading order.');
+        return;
+    }
+    
+    // Initialize the app
+    const app = new ReadLaterApp();
+    
+    // Global functions for button handlers
+    window.App = {
+        toggleRead: (id) => app.toggleRead(id),
+        deleteItem: (id) => app.deleteItem(id),
+        load: () => app.load(),
+        render: () => app.render(),
+        updateCountDisplay: () => app.updateCountDisplay(),
+        get items() { return app.items; }
+    };
+    
+    // Make CategoryUI globally accessible for i18n updates
+    window.CategoryUI = CategoryUI;
+});

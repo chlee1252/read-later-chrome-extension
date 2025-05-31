@@ -22,7 +22,7 @@ const UI = {
 
     updateCount(total, unread) {
         const el = document.getElementById('count');
-        el.textContent = `${total}개 (${unread}개 읽지않음)`;
+        el.textContent = window.i18n.t('itemCount', { total, unread });
     },
 
     createItemHTML(item) {
@@ -32,15 +32,19 @@ const UI = {
         return `
             <div class="item ${item.read ? 'read' : ''}" data-id="${item.id}">
                 <div class="item-header">
-                    <div class="item-title">
-                        ${CategoryUI.renderCategoryBadge(item.categoryId, item.id)}
-                        ${Utils.escapeHtml(item.title)}
+                    <div class="item-content">
+                        <div class="item-category">
+                            ${CategoryUI.renderCategoryBadge(item.categoryId, item.id)}
+                        </div>
+                        <div class="item-title">
+                            ${Utils.escapeHtml(item.title)}
+                        </div>
                     </div>
                     <div class="item-actions">
-                        <button class="btn-small btn-toggle" data-id="${item.id}" title="${item.read ? '읽지않음' : '읽음'}으로 표시">
+                        <button class="btn-small btn-toggle" data-id="${item.id}" title="${item.read ? window.i18n.t('markAsUnread') : window.i18n.t('markAsRead')}">
                             ${readIcon}
                         </button>
-                        <button class="btn-small btn-delete" data-id="${item.id}" title="삭제">
+                        <button class="btn-small btn-delete" data-id="${item.id}" title="${window.i18n.t('delete')}">
                             ✕
                         </button>
                     </div>
@@ -135,7 +139,7 @@ const UI = {
                         // Add loading state
                         categoryBadge.classList.add('loading');
                         const originalContent = categoryBadge.innerHTML;
-                        categoryBadge.innerHTML = '<span class="category-icon">⏳</span><span class="category-name">변경중...</span>';
+                        categoryBadge.innerHTML = `<span class="category-icon">⏳</span><span class="category-name">${window.i18n.t('changing')}</span>`;
                         
                         await CategoryUI.showCategorySelector(itemId);
                         
@@ -143,7 +147,7 @@ const UI = {
                         categoryBadge.classList.remove('loading');
                     } catch (error) {
                         console.error('Error showing category selector:', error);
-                        UI.showToast('카테고리 변경에 실패했습니다.', 'error');
+                        UI.showToast(window.i18n.t('categoryChangeFailed'), 'error');
                         categoryBadge.classList.remove('loading');
                     }
                 }
@@ -188,7 +192,7 @@ const UI = {
             const btn = item.querySelector('.btn-toggle');
             if (btn) {
                 btn.textContent = isRead ? '⟲' : '✓';
-                btn.title = isRead ? '읽지않음으로 표시' : '읽음으로 표시';
+                btn.title = isRead ? window.i18n.t('markAsUnread') : window.i18n.t('markAsRead');
             }
             
             // Restore transform

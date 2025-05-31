@@ -25,7 +25,7 @@ const Storage = {
         
         // Check duplicate unless explicitly skipped
         if (!skipDuplicateCheck && items.some(i => i.url === item.url)) {
-            return { success: false, message: '이미 저장된 페이지입니다' };
+            return { success: false, message: window.i18n.t('alreadySaved') };
         }
 
         // Add default category if not specified
@@ -38,7 +38,7 @@ const Storage = {
         
         return { 
             success: saved, 
-            message: saved ? '저장되었습니다' : '저장 실패' 
+            message: saved ? window.i18n.t('saved') : window.i18n.t('saveFailed') 
         };
     },
 
@@ -51,11 +51,11 @@ const Storage = {
             const saved = await this.save(items);
             return { 
                 success: saved, 
-                message: saved ? '카테고리가 변경되었습니다' : '카테고리 변경 실패'
+                message: saved ? window.i18n.t('categoryChanged') : window.i18n.t('categoryChangeFailed')
             };
         }
         
-        return { success: false, message: '항목을 찾을 수 없습니다' };
+        return { success: false, message: window.i18n.t('itemNotFound') };
     },
 
     async getItemsByCategory(categoryId) {
@@ -75,7 +75,7 @@ const Storage = {
         
         return { 
             success: saved,
-            message: saved ? '삭제되었습니다' : '삭제 실패' 
+            message: saved ? window.i18n.t('deleted') : window.i18n.t('deleteFailed') 
         };
     },
 
@@ -96,11 +96,11 @@ const Storage = {
             return { 
                 success: saved, 
                 read: item.read,
-                message: saved ? `${item.read ? '읽음' : '읽지않음'}으로 표시` : '업데이트 실패'
+                message: saved ? (item.read ? window.i18n.t('markedAsRead') : window.i18n.t('markedAsUnread')) : window.i18n.t('updateFailed')
             };
         }
         
-        return { success: false, message: '항목을 찾을 수 없습니다' };
+        return { success: false, message: window.i18n.t('itemNotFound') };
     },
 
     // 자동 삭제 설정 관리
@@ -132,7 +132,7 @@ const Storage = {
     async cleanupReadItems() {
         const settings = await this.getAutoDeleteSettings();
         if (!settings.enabled) {
-            return { cleaned: 0, message: '자동 삭제가 비활성화되어 있습니다' };
+            return { cleaned: 0, message: window.i18n.t('autoDeleteDisabled') };
         }
 
         const items = await this.load();
@@ -174,10 +174,10 @@ const Storage = {
             return {
                 cleaned: deletedCount,
                 success: saved,
-                message: saved ? `${deletedCount}개 항목이 자동 삭제되었습니다` : '자동 삭제 중 오류 발생'
+                message: saved ? window.i18n.t('autoDeleteCompleted', { count: deletedCount }) : window.i18n.t('autoDeleteError')
             };
         }
         
-        return { cleaned: 0, success: true, message: '삭제할 항목이 없습니다' };
+        return { cleaned: 0, success: true, message: window.i18n.t('autoDeleteNoItems') };
     }
 };

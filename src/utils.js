@@ -12,7 +12,36 @@ const Utils = {
     },
 
     formatDate(dateString) {
-        return new Date(dateString).toLocaleDateString('ko-KR', {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        
+        // Use i18n translations if available
+        if (window.i18n && typeof window.i18n.t === 'function') {
+            if (diffDays === 0) {
+                return window.i18n.t('today') + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            } else if (diffDays === 1) {
+                return window.i18n.t('yesterday') + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            } else if (diffDays < 7) {
+                return window.i18n.t('daysAgo', { days: diffDays });
+            } else {
+                const lang = window.i18n.getEffectiveLanguage();
+                const format = window.i18n.t('longDateFormat');
+                
+                // Use different date formatting based on language
+                const locale = window.i18n.getLocale ? window.i18n.getLocale() : 
+                               (lang === 'ko' ? 'ko-KR' : 'en-US');
+                
+                return date.toLocaleDateString(locale, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+        }
+        
+        // Fallback if i18n not available
+        return date.toLocaleDateString(navigator.language, {
             month: 'short',
             day: 'numeric',
             hour: '2-digit',

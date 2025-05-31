@@ -1,9 +1,16 @@
 // Category management system
 const Categories = {
     // Default categories
-    defaultCategories: [
-        { id: 'uncategorized', name: '미분류', color: '#6c757d', icon: '📄' }
-    ],
+    getDefaultCategories() {
+        return [
+            { 
+                id: 'uncategorized', 
+                name: window.i18n && window.i18n.t ? window.i18n.t('uncategorized') : '미분류', 
+                color: '#6c757d', 
+                icon: '📄' 
+            }
+        ];
+    },
     
     // Maximum number of categories allowed
     maxCategories: 6,
@@ -11,11 +18,12 @@ const Categories = {
     async loadCategories() {
         try {
             const result = await chrome.storage.local.get(['categories']);
-            const categories = result.categories || this.defaultCategories;
+            const defaultCategories = this.getDefaultCategories();
+            const categories = result.categories || defaultCategories;
             
             // Ensure default categories exist
             const existingIds = categories.map(c => c.id);
-            const missingDefaults = this.defaultCategories.filter(def => !existingIds.includes(def.id));
+            const missingDefaults = defaultCategories.filter(def => !existingIds.includes(def.id));
             
             if (missingDefaults.length > 0) {
                 const updatedCategories = [...categories, ...missingDefaults];
@@ -23,10 +31,16 @@ const Categories = {
                 return updatedCategories;
             }
             
+            // Update uncategorized name if it exists
+            const uncategorizedIndex = categories.findIndex(c => c.id === 'uncategorized');
+            if (uncategorizedIndex !== -1) {
+                categories[uncategorizedIndex].name = window.i18n && window.i18n.t ? window.i18n.t('uncategorized') : '미분류';
+            }
+            
             return categories;
         } catch (error) {
             console.error('Error loading categories:', error);
-            return this.defaultCategories;
+            return this.getDefaultCategories();
         }
     },
 
@@ -97,7 +111,8 @@ const Categories = {
 
     async deleteCategory(id) {
         // Cannot delete default categories
-        if (this.defaultCategories.some(def => def.id === id)) {
+        const defaultCategories = this.getDefaultCategories();
+        if (defaultCategories.some(def => def.id === id)) {
             return { success: false, message: '기본 카테고리는 삭제할 수 없습니다' };
         }
 
@@ -141,7 +156,7 @@ const Categories = {
     },
 
     getCategoryById(categories, id) {
-        return categories.find(c => c.id === id) || this.defaultCategories[0];
+        return categories.find(c => c.id === id) || this.getDefaultCategories()[0];
     },
 
     // Predefined color options for categories
