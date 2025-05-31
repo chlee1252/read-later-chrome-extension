@@ -70,6 +70,36 @@ class ReadLaterApp {
                 }
             }
         });
+
+        // Auto-delete settings
+        document.getElementById('autoDeleteEnabled').addEventListener('change', (e) => {
+            this.handleAutoDeleteToggle(e.target.checked);
+        });
+
+        // 저장 버튼 클릭 이벤트
+        document.getElementById('saveAutoDeleteSettings').addEventListener('click', () => {
+            this.saveAutoDeleteSettings();
+        });
+
+        // 실시간 변경 감지 (선택사항)
+        document.getElementById('autoDeleteValue').addEventListener('input', (e) => {
+            // 입력값 검증만 수행 (저장은 버튼 클릭 시)
+            const value = parseInt(e.target.value);
+            if (value < 1) {
+                e.target.value = 1;
+            }
+        });
+
+        // Unit button click handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('unit-btn')) {
+                // Remove active class from all unit buttons
+                document.querySelectorAll('.unit-btn').forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                e.target.classList.add('active');
+                // 선택만 변경, 저장은 버튼 클릭 시
+            }
+        });
     }
 
     showSettings() {
@@ -81,6 +111,9 @@ class ReadLaterApp {
         
         // Update theme buttons to reflect current theme
         this.updateThemeButtons(Theme.currentTheme);
+        
+        // Load and display auto-delete settings
+        this.loadAutoDeleteSettings();
     }
     
     hideSettings() {
@@ -228,6 +261,88 @@ class ReadLaterApp {
         } catch (error) {
             console.error('Error updating badge:', error);
         }
+    }
+
+    // 자동 삭제 설정 저장 (저장 버튼 클릭 시)
+    async saveAutoDeleteSettings() {
+        const enabled = document.getElementById('autoDeleteEnabled').checked;
+        
+        if (!enabled) {
+            UI.showToast('자동 삭제가 비활성화되어 있습니다', 'info');
+            return;
+        }
+
+        const value = parseInt(document.getElementById('autoDeleteValue').value);
+        const activeUnitBtn = document.querySelector('.unit-btn.active');
+        const unit = activeUnitBtn ? activeUnitBtn.dataset.unit : 'days';
+        
+        if (!value || value < 1) {
+            UI.showToast('올바른 시간 값을 입력해주세요', 'error');
+            document.getElementById('autoDeleteValue').focus();
+            return;
+        }
+        
+        const settings = { enabled, value, unit };
+        
+        try {
+            await Storage.setAutoDeleteSettings(settings);
+            
+            // background script에 스케줄러 재설정 요청
+            await chrome.runtime.sendMessage({ 
+                action: 'updateAutoDeleteScheduler',
+                settings: settings 
+            });
+            
+            // 사용자에게 설정 완료 피드백
+            const unitName = unit === 'minutes' ? '분' : unit === 'hours' ? '시간' : '일';
+            UI.showToast(`자동 삭제 설정 저장됨: ${value}${unitName} 후 삭제`, 'success');
+            
+            console.log('📡 Auto-delete settings saved:', settings);
+        } catch (error) {
+            console.error('Error saving auto-delete settings:', error);
+            UI.showToast('설정 저장에 실패했습니다', 'error');
+        }
+    }
+
+    // 자동 삭제 토글 (체크박스 변경 시)
+    async handleAutoDeleteToggle(enabled) {
+        const timeRow = document.getElementById('autoDeleteTimeRow');
+        timeRow.style.display = enabled ? 'flex' : 'none';
+        
+        if (!enabled) {
+            // 비활성화 시 즉시 설정 저장
+            const settings = { enabled: false, value: 30, unit: 'days' };
+            await Storage.setAutoDeleteSettings(settings);
+            
+            // background script에 스케줄러 재설정 요청
+            try {
+                await chrome.runtime.sendMessage({ 
+                    action: 'updateAutoDeleteScheduler',
+                    settings: settings 
+                });
+                UI.showToast('자동 삭제가 비활성화되었습니다', 'info');
+            } catch (error) {
+                console.error('Error requesting scheduler update:', error);
+                UI.showToast('설정 저장에 실패했습니다', 'error');
+            }
+        } else {
+            UI.showToast('시간을 설정하고 저장 버튼을 클릭하세요', 'info');
+        }
+    }
+
+    async loadAutoDeleteSettings() {
+        const settings = await Storage.getAutoDeleteSettings();
+        
+        document.getElementById('autoDeleteEnabled').checked = settings.enabled;
+        document.getElementById('autoDeleteValue').value = settings.value;
+        
+        // 단위 버튼 활성화
+        document.querySelectorAll('.unit-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.unit === settings.unit);
+        });
+        
+        const timeRow = document.getElementById('autoDeleteTimeRow');
+        timeRow.style.display = settings.enabled ? 'flex' : 'none';
     }
 }
 
