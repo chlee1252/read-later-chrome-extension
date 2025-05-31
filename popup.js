@@ -107,12 +107,29 @@ class ReadLaterApp {
                 return;
             }
 
+            // Check for duplicates before showing category selector
+            const existingItems = await Storage.load();
+            const exists = existingItems.some(item => item.url === tab.url);
+            if (exists) {
+                UI.showToast('이미 저장된 페이지입니다', 'error');
+                return;
+            }
+
+            // Show category selector
+            const selectedCategoryId = await CategoryUI.showCategorySelectorForNewItem();
+            
+            // If user cancelled category selection, don't add the item
+            if (selectedCategoryId === null) {
+                return;
+            }
+
             const newItem = {
                 id: Utils.generateId(),
                 title: tab.title || 'Untitled',
                 url: tab.url,
                 addedAt: new Date().toISOString(),
-                read: false
+                read: false,
+                categoryId: selectedCategoryId || 'uncategorized'
             };
 
             const result = await Storage.add(newItem);
@@ -121,6 +138,7 @@ class ReadLaterApp {
             if (result.success) {
                 await this.load();
                 this.render();
+                await CategoryUI.renderCategoryFilter(); // Update category filter
                 this.updateBadge();
             }
         } catch (error) {

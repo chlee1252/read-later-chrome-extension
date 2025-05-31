@@ -26,7 +26,8 @@ const CategoryUI = {
         categories.forEach(category => {
             html += `
                 <button class="category-btn ${this.currentFilter === category.id ? 'active' : ''}" 
-                        data-category="${category.id}">
+                        data-category="${category.id}"
+                        style="--category-color: ${category.color};">
                     <span class="category-icon">${category.icon}</span>
                     <span class="category-name">${category.name}</span>
                     <span class="category-count">${category.totalCount}</span>
@@ -234,6 +235,62 @@ const CategoryUI = {
                     window.App.render();
                     await this.renderCategoryFilter();
                 }
+            });
+        });
+    },
+
+    async showCategorySelectorForNewItem(item) {
+        const categories = await Categories.loadCategories();
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>카테고리 선택</h3>
+                    <button class="btn-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">새 항목을 어느 카테고리에 저장하시겠습니까?</p>
+                    <div class="category-list">
+                        ${categories.map(category => `
+                            <button class="category-select-item" 
+                                    data-category="${category.id}"
+                                    style="--category-color: ${category.color};">
+                                <span class="category-color-dot" style="background-color: ${category.color};"></span>
+                                <span class="category-icon">${category.icon}</span>
+                                <span class="category-name">${category.name}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        return new Promise((resolve) => {
+            // Close button event listener
+            modal.querySelector('.btn-close').addEventListener('click', () => {
+                modal.remove();
+                resolve(null); // User cancelled
+            });
+
+            // Click outside to close
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                    resolve(null); // User cancelled
+                }
+            });
+
+            // Category selection
+            modal.querySelectorAll('.category-select-item').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const categoryId = btn.dataset.category;
+                    modal.remove();
+                    resolve(categoryId);
+                });
             });
         });
     },
