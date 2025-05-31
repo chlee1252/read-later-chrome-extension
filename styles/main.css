@@ -14,6 +14,7 @@
     --accent-blue-hover: #0056d6;
     --accent-green: #28a745;
     --accent-red: #ff3b30;
+    --warning-color: #f59e0b;
     --shadow-light: rgba(0, 0, 0, 0.04);
     --shadow-medium: rgba(0, 0, 0, 0.08);
 }
@@ -34,6 +35,7 @@
         --accent-blue-hover: #409cff;
         --accent-green: #30d158;
         --accent-red: #ff453a;
+        --warning-color: #ff9f0a;
         --shadow-light: rgba(0, 0, 0, 0.3);
         --shadow-medium: rgba(0, 0, 0, 0.4);
     }
@@ -55,6 +57,7 @@ body[data-theme="light"] {
     --accent-blue-hover: #0056d6;
     --accent-green: #28a745;
     --accent-red: #ff3b30;
+    --warning-color: #f59e0b;
     --shadow-light: rgba(0, 0, 0, 0.04);
     --shadow-medium: rgba(0, 0, 0, 0.08);
 }
@@ -75,6 +78,7 @@ body[data-theme="dark"] {
     --accent-blue-hover: #409cff;
     --accent-green: #30d158;
     --accent-red: #ff453a;
+    --warning-color: #ff9f0a;
     --shadow-light: rgba(0, 0, 0, 0.3);
     --shadow-medium: rgba(0, 0, 0, 0.4);
 }
@@ -722,21 +726,66 @@ body {
 .category-badge {
     display: inline-flex;
     align-items: center;
+    gap: 5px; /* 아이콘과 이름 사이 여백 */
     margin-right: 8px;
     font-size: 12px;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 12px;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-secondary);
     cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
+    min-width: fit-content;
 }
 
 .category-badge:hover {
     transform: translateY(-1px);
-    box-shadow: 0 1px 3px var(--shadow-light);
-    color: var(--accent-blue);
+    box-shadow: 0 2px 6px var(--shadow-light);
+    opacity: 0.9;
+    border-color: currentColor;
+    background-color: var(--bg-primary);
+}
+
+/* 카테고리 배지 내부 요소들 */
+.category-badge .category-icon {
+    flex-shrink: 0;
+}
+
+.category-badge .category-name {
+    flex-shrink: 0;
+    font-weight: 500;
+}
+
+/* 로딩 상태 스타일 */
+.category-badge.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.category-badge.loading .category-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 카테고리 추가 배지 스타일 */
+.category-badge.category-add {
+    background-color: var(--bg-tertiary);
+    border: 1px dashed var(--border-tertiary);
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.category-badge.category-add:hover {
+    background-color: var(--accent-blue);
     border-color: var(--accent-blue);
+    border-style: solid;
+    color: white;
+    opacity: 1;
 }
 
 /* Modal Styles */
@@ -896,6 +945,16 @@ body {
     line-height: 1.4;
 }
 
+.modal-description.small-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border-left: 3px solid var(--warning-color);
+}
+
 .existing-item-info {
     background: var(--bg-secondary);
     border: 1px solid var(--border-secondary);
@@ -916,6 +975,63 @@ body {
     color: var(--text-tertiary);
 }
 
+/* Read Item Modal Styles */
+.existing-item-info.read-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--accent-green);
+    border-left: 4px solid var(--accent-green);
+}
+
+.existing-item-info.read-item .item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.existing-item-info.read-item .read-status {
+    color: var(--accent-green);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.existing-item-info.read-item .read-date {
+    font-size: 11px;
+    color: var(--accent-green);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.modal-description.warning {
+    color: var(--accent-red);
+    font-weight: 500;
+    background: rgba(255, 59, 48, 0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-red);
+}
+
+/* Warning Button Style */
+.btn-warning {
+    background: var(--warning-color, #f59e0b);
+    color: white;
+    border: none;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+}
+
+/* Danger Button Style */
+.btn-danger {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #ff1f14;
+}
+
 .category-select-item {
     display: flex;
     align-items: center;
@@ -928,12 +1044,45 @@ body {
     transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     text-align: left;
     width: 100%;
+    position: relative;
 }
 
 .category-select-item:hover {
     background: var(--bg-secondary);
     border-color: var(--border-tertiary);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.category-select-item.selected {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.category-select-item .category-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.category-select-item .category-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+}
+
+.category-select-item .category-name {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.category-select-item .check-icon {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
 }
 
 .category-select-item[style*="--category-color"]:hover {

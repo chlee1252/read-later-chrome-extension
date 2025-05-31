@@ -20,11 +20,11 @@ const Storage = {
         }
     },
 
-    async add(item) {
+    async add(item, skipDuplicateCheck = false) {
         const items = await this.load();
         
-        // Check duplicate
-        if (items.some(i => i.url === item.url)) {
+        // Check duplicate unless explicitly skipped
+        if (!skipDuplicateCheck && items.some(i => i.url === item.url)) {
             return { success: false, message: '이미 저장된 페이지입니다' };
         }
 

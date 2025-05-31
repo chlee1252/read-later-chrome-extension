@@ -109,18 +109,23 @@ class ReadLaterApp {
 
             // Check for duplicates before showing category selector
             const existingItem = await Storage.findItemByUrl(tab.url);
+            let result = null; // Declare result variable in function scope
+            
             if (existingItem) {
-                // Show category change modal for existing item
-                const result = await CategoryUI.showCategorySelectorForExistingItem(existingItem);
+                // Show appropriate modal based on read status
+                result = await CategoryUI.showCategorySelectorForExistingItem(existingItem);
                 
                 if (result === null) {
                     // User cancelled
                     return;
                 } else if (result === 'no-change') {
-                    UI.showToast('이미 저장된 페이지입니다', 'info');
+                    UI.showToast('이미 저장된 페이지입니다', 'error');
                     return;
+                } else if (result === 'overwrite') {
+                    // User wants to save as new item - proceed with new item creation
+                    // Fall through to the new item creation logic below
                 } else {
-                    // Category was updated
+                    // Category was updated for existing item
                     UI.showToast('카테고리가 변경되었습니다', 'success');
                     await this.load();
                     this.render();
@@ -129,6 +134,7 @@ class ReadLaterApp {
                 }
             }
 
+            // If we reach here, either no duplicate exists or user chose to overwrite
             // Show category selector for new item
             const selectedCategoryId = await CategoryUI.showCategorySelectorForNewItem();
             
@@ -146,10 +152,18 @@ class ReadLaterApp {
                 categoryId: selectedCategoryId || 'uncategorized'
             };
 
-            const result = await Storage.add(newItem);
-            UI.showToast(result.message, result.success ? 'success' : 'error');
+            // Skip duplicate check if this is an overwrite operation
+            const skipDuplicateCheck = existingItem && result === 'overwrite';
             
-            if (result.success) {
+            // If overwriting, delete the existing item first
+            if (existingItem && result === 'overwrite') {
+                await Storage.remove(existingItem.id);
+            }
+            
+            const saveResult = await Storage.add(newItem, skipDuplicateCheck);
+            UI.showToast(saveResult.message, saveResult.success ? 'success' : 'error');
+            
+            if (saveResult.success) {
                 await this.load();
                 this.render();
                 await CategoryUI.renderCategoryFilter(); // Update category filter

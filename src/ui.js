@@ -33,7 +33,7 @@ const UI = {
             <div class="item ${item.read ? 'read' : ''}" data-id="${item.id}">
                 <div class="item-header">
                     <div class="item-title">
-                        ${CategoryUI.renderCategoryBadge(item.categoryId).replace('data-item-id="${item.categoryId}"', `data-item-id="${item.id}"`)}
+                        ${CategoryUI.renderCategoryBadge(item.categoryId, item.id)}
                         ${Utils.escapeHtml(item.title)}
                     </div>
                     <div class="item-actions">
@@ -81,11 +81,17 @@ const UI = {
     },
 
     attachEvents() {
+        // Remove existing event listeners first
+        const existingHandler = document.querySelector('#list')._categoryClickHandler;
+        if (existingHandler) {
+            document.querySelector('#list').removeEventListener('click', existingHandler);
+        }
+
         document.querySelectorAll('.item').forEach(item => {
             // Item click to open URL
             item.addEventListener('click', (e) => {
-                // Skip if button clicked
-                if (e.target.closest('button')) return;
+                // Skip if button clicked or category badge clicked
+                if (e.target.closest('button') || e.target.closest('.category-badge')) return;
                 
                 const url = item.querySelector('.item-url').getAttribute('title');
                 chrome.tabs.create({ url });
@@ -112,6 +118,40 @@ const UI = {
                 }
             });
         });
+
+        // Category badge event delegation on the list container
+        const listContainer = document.querySelector('#list');
+        const categoryClickHandler = async (e) => {
+            const categoryBadge = e.target.closest('.category-badge');
+            if (categoryBadge) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                const itemId = categoryBadge.dataset.itemId;
+                console.log('Category badge clicked via delegation for item:', itemId);
+                
+                if (itemId) {
+                    try {
+                        // Add loading state
+                        categoryBadge.classList.add('loading');
+                        const originalContent = categoryBadge.innerHTML;
+                        categoryBadge.innerHTML = '<span class="category-icon">⏳</span><span class="category-name">변경중...</span>';
+                        
+                        await CategoryUI.showCategorySelector(itemId);
+                        
+                        // Remove loading state and refresh the list
+                        categoryBadge.classList.remove('loading');
+                    } catch (error) {
+                        console.error('Error showing category selector:', error);
+                        UI.showToast('카테고리 변경에 실패했습니다.', 'error');
+                        categoryBadge.classList.remove('loading');
+                    }
+                }
+            }
+        };
+        
+        listContainer.addEventListener('click', categoryClickHandler);
+        listContainer._categoryClickHandler = categoryClickHandler; // Store reference for cleanup
     },
 
     filterItems(searchTerm) {
