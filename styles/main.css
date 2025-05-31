@@ -719,7 +719,7 @@ body {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     max-width: 400px;
     width: 90%;
-    max-height: 80vh;
+    max-height: 90vh;
     overflow: hidden;
     border: 1px solid var(--border-primary);
 }
@@ -741,7 +741,7 @@ body {
 
 .modal-body {
     padding: 20px 24px;
-    max-height: 400px;
+    max-height: 60vh;
     overflow-y: auto;
 }
 
@@ -749,28 +749,28 @@ body {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    padding: 16px 24px 20px;
+    padding: 8px 16px 12px;
     border-top: 1px solid var(--border-primary);
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-weight: 500;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .form-group input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 7px 10px;
     border: 1px solid var(--border-secondary);
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
     background: var(--bg-tertiary);
     color: var(--text-secondary);
     transition: all 0.2s ease;
@@ -787,7 +787,7 @@ body {
 .icon-selector {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    gap: 6px;
+    gap: 4px;
 }
 
 .icon-option {
@@ -818,7 +818,7 @@ body {
 .color-selector {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
+    gap: 4px;
 }
 
 .color-option {
