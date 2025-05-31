@@ -3,37 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>읽기 목록</title>
-    <link rel="stylesheet" href="popup.css">
+    <title>Read Later</title>
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 읽기 목록</h1>
-            <div class="actions">
-                <button id="addCurrentPage" class="btn-primary">
-                    ➕ 현재 페이지 추가
-                </button>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>📖 Read Later</h1>
+            <div class="header-actions">
+                <button id="settingsBtn" class="btn-settings" title="설정">⚙️</button>
+                <button id="addPage" class="btn-add">추가</button>
             </div>
         </header>
-        
-        <div class="search-section">
-            <input type="text" id="searchInput" placeholder="검색어를 입력하세요..." />
+
+        <!-- Search -->
+        <div class="search">
+            <input type="text" id="search" placeholder="검색..." autocomplete="off">
         </div>
-        
+
+        <!-- Stats -->
         <div class="stats">
-            <span id="itemCount">0개 항목</span>
-            <button id="clearAll" class="btn-danger">모두 삭제</button>
+            <span id="count">0개</span>
         </div>
-        
-        <div id="readingList" class="reading-list">
-            <div id="emptyState" class="empty-state">
-                <p>저장된 페이지가 없습니다.</p>
-                <p>현재 페이지를 추가해보세요!</p>
+
+        <!-- List -->
+        <div id="list" class="list"></div>
+
+        <!-- Empty -->
+        <div id="empty" class="empty" style="display: none;">
+            <p>저장된 항목이 없습니다</p>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel" style="display: none;">
+            <div class="settings-header">
+                <h2>설정</h2>
+                <button id="closeSettings" class="btn-close">✕</button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label class="setting-label">테마</label>
+                    <div class="theme-selector">
+                        <button id="themeAuto" class="theme-btn active" data-theme="auto">
+                            <span class="theme-icon">🌓</span>
+                            <span>자동</span>
+                        </button>
+                        <button id="themeLight" class="theme-btn" data-theme="light">
+                            <span class="theme-icon">☀️</span>
+                            <span>라이트</span>
+                        </button>
+                        <button id="themeDark" class="theme-btn" data-theme="dark">
+                            <span class="theme-icon">🌙</span>
+                            <span>다크</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
+
+    <script src="src/storage.js"></script>
+    <script src="src/ui.js"></script>
+    <script src="src/utils.js"></script>
+    <script src="src/theme.js"></script>
     <script src="popup.js"></script>
 </body>
 </html>

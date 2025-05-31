@@ -1,32 +1,48 @@
-// 백그라운드 서비스 워커
+// Enhanced background service worker for Read-Later extension
 class ReadLaterBackground {
     constructor() {
         this.init();
     }
 
     init() {
-        // 익스텐션 설치 시 초기화
+        // Extension installation and initialization
         chrome.runtime.onInstalled.addListener(() => {
+            console.log('🚀 Read-Later extension installed/updated');
+            this.initializeStorage();
             this.setupContextMenu();
             this.updateBadge();
         });
 
-        // 스토리지 변경 감지
+        // Storage change detection for real-time badge updates
         chrome.storage.onChanged.addListener((changes, namespace) => {
             if (namespace === 'local' && changes.readingList) {
                 this.updateBadge();
+                console.log('📚 Reading list updated, badge refreshed');
             }
         });
 
-        // 컨텍스트 메뉴 클릭 처리
+        // Context menu click handling
         chrome.contextMenus.onClicked.addListener((info, tab) => {
             this.handleContextMenuClick(info, tab);
         });
 
-        // 액션 버튼 클릭 처리 (아이콘 클릭)
+        // Action button click handling (for browsers without popup support)
         chrome.action.onClicked.addListener((tab) => {
             this.addCurrentPageToList(tab);
         });
+    }
+
+    // Initialize storage with empty reading list if needed
+    async initializeStorage() {
+        try {
+            const result = await chrome.storage.local.get(['readingList']);
+            if (!result.readingList) {
+                await chrome.storage.local.set({ readingList: [] });
+                console.log('📋 Initialized empty reading list');
+            }
+        } catch (error) {
+            console.error('❌ Error initializing storage:', error);
+        }
     }
 
     setupContextMenu() {
@@ -166,12 +182,20 @@ class ReadLaterBackground {
             const readingList = result.readingList || [];
             const unreadCount = readingList.filter(item => !item.read).length;
             
+            // Use modern color scheme
             const badgeText = unreadCount > 0 ? unreadCount.toString() : '';
             
             await chrome.action.setBadgeText({ text: badgeText });
-            await chrome.action.setBadgeBackgroundColor({ color: '#007bff' });
+            await chrome.action.setBadgeBackgroundColor({ color: '#6366f1' }); // Modern indigo color
+            
+            // Optional: Set badge text color for better contrast
+            if (chrome.action.setBadgeTextColor) {
+                await chrome.action.setBadgeTextColor({ color: '#ffffff' });
+            }
+            
+            console.log(`🔢 Badge updated: ${unreadCount} unread items`);
         } catch (error) {
-            console.error('Error updating badge:', error);
+            console.error('❌ Error updating badge:', error);
         }
     }
 

@@ -14,10 +14,8 @@ async function build() {
         const filesToCopy = [
             'manifest.json',
             'popup.html',
-            'popup.css',
             'popup.js',
-            'background.js',
-            'README.md'
+            'background.js'
         ];
 
         // Copy files
@@ -31,6 +29,18 @@ async function build() {
                 console.log(`✅ Copied: ${file}`);
             } else {
                 console.log(`⚠️  Not found: ${file}`);
+            }
+        }
+
+        // Copy directories
+        const dirsTooCopy = ['styles', 'src'];
+        for (const dir of dirsTooCopy) {
+            const srcPath = path.join(srcDir, dir);
+            const distPath = path.join(distDir, dir);
+            
+            if (await fs.pathExists(srcPath)) {
+                await fs.copy(srcPath, distPath);
+                console.log(`✅ Copied: ${dir}/`);
             }
         }
 
