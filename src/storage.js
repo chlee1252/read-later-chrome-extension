@@ -63,6 +63,11 @@ const Storage = {
         return items.filter(item => (item.categoryId || 'uncategorized') === categoryId);
     },
 
+    async findItemByUrl(url) {
+        const items = await this.load();
+        return items.find(item => item.url === url);
+    },
+
     async remove(id) {
         const items = await this.load();
         const filtered = items.filter(i => i.id !== id);

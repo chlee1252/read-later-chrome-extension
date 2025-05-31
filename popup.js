@@ -108,14 +108,28 @@ class ReadLaterApp {
             }
 
             // Check for duplicates before showing category selector
-            const existingItems = await Storage.load();
-            const exists = existingItems.some(item => item.url === tab.url);
-            if (exists) {
-                UI.showToast('이미 저장된 페이지입니다', 'error');
-                return;
+            const existingItem = await Storage.findItemByUrl(tab.url);
+            if (existingItem) {
+                // Show category change modal for existing item
+                const result = await CategoryUI.showCategorySelectorForExistingItem(existingItem);
+                
+                if (result === null) {
+                    // User cancelled
+                    return;
+                } else if (result === 'no-change') {
+                    UI.showToast('이미 저장된 페이지입니다', 'info');
+                    return;
+                } else {
+                    // Category was updated
+                    UI.showToast('카테고리가 변경되었습니다', 'success');
+                    await this.load();
+                    this.render();
+                    await CategoryUI.renderCategoryFilter();
+                    return;
+                }
             }
 
-            // Show category selector
+            // Show category selector for new item
             const selectedCategoryId = await CategoryUI.showCategorySelectorForNewItem();
             
             // If user cancelled category selection, don't add the item

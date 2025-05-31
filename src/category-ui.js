@@ -295,6 +295,103 @@ const CategoryUI = {
         });
     },
 
+    async showCategorySelectorForExistingItem(existingItem) {
+        const categories = await Categories.loadCategories();
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>이미 저장된 페이지</h3>
+                    <button class="btn-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">이 페이지는 이미 저장되어 있습니다.</p>
+                    <div class="existing-item-info">
+                        <div class="item-title">${existingItem.title}</div>
+                        <div class="current-category">
+                            현재 카테고리: ${Categories.getCategoryById(await Categories.loadCategories(), existingItem.categoryId || 'uncategorized').name}
+                        </div>
+                    </div>
+                    <p class="modal-description">카테고리를 변경하시겠습니까?</p>
+                    <div class="category-list">
+                        ${categories.map(category => `
+                            <button class="category-select-item ${(existingItem.categoryId || 'uncategorized') === category.id ? 'selected' : ''}" 
+                                    data-category="${category.id}"
+                                    style="--category-color: ${category.color};">
+                                <span class="category-color-dot" style="background-color: ${category.color};"></span>
+                                <span class="category-icon">${category.icon}</span>
+                                <span class="category-name">${category.name}</span>
+                                ${(existingItem.categoryId || 'uncategorized') === category.id ? '<span class="check-icon">✓</span>' : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelBtn">취소</button>
+                    <button class="btn btn-primary" id="updateCategoryBtn">카테고리 변경</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        let selectedCategoryId = existingItem.categoryId || 'uncategorized';
+
+        return new Promise((resolve) => {
+            // Close button event listener
+            modal.querySelector('.btn-close').addEventListener('click', () => {
+                modal.remove();
+                resolve(null); // User cancelled
+            });
+
+            // Cancel button
+            modal.querySelector('#cancelBtn').addEventListener('click', () => {
+                modal.remove();
+                resolve(null); // User cancelled
+            });
+
+            // Click outside to close
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                    resolve(null); // User cancelled
+                }
+            });
+
+            // Category selection
+            modal.querySelectorAll('.category-select-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove selected class from all buttons
+                    modal.querySelectorAll('.category-select-item').forEach(b => {
+                        b.classList.remove('selected');
+                        const checkIcon = b.querySelector('.check-icon');
+                        if (checkIcon) checkIcon.remove();
+                    });
+                    
+                    // Add selected class to clicked button
+                    btn.classList.add('selected');
+                    btn.insertAdjacentHTML('beforeend', '<span class="check-icon">✓</span>');
+                    selectedCategoryId = btn.dataset.category;
+                });
+            });
+
+            // Update category button
+            modal.querySelector('#updateCategoryBtn').addEventListener('click', async () => {
+                if (selectedCategoryId === (existingItem.categoryId || 'uncategorized')) {
+                    modal.remove();
+                    resolve('no-change'); // No change needed
+                    return;
+                }
+
+                const result = await Storage.updateItemCategory(existingItem.id, selectedCategoryId);
+                modal.remove();
+                resolve(result.success ? selectedCategoryId : null);
+            });
+        });
+    },
+
     renderCategoryBadge(categoryId) {
         if (!categoryId || categoryId === 'uncategorized') {
             return '';
