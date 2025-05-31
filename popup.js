@@ -8,6 +8,7 @@ class ReadLaterApp {
     async init() {
         await this.load();
         await Theme.init();
+        await CategoryUI.renderCategoryFilter();
         this.setupEvents();
         this.render();
         this.updateBadge();
@@ -159,7 +160,16 @@ class ReadLaterApp {
     render() {
         const unread = this.items.filter(item => !item.read).length;
         UI.updateCount(this.items.length, unread);
-        UI.renderList(this.items);
+        
+        // Apply current category filter
+        let itemsToRender = this.items;
+        if (CategoryUI.currentFilter !== 'all') {
+            itemsToRender = this.items.filter(item => 
+                (item.categoryId || 'uncategorized') === CategoryUI.currentFilter
+            );
+        }
+        
+        UI.renderList(itemsToRender);
     }
 
     async updateBadge() {
@@ -181,5 +191,7 @@ const app = new ReadLaterApp();
 // Global functions for button handlers
 window.App = {
     toggleRead: (id) => app.toggleRead(id),
-    deleteItem: (id) => app.deleteItem(id)
+    deleteItem: (id) => app.deleteItem(id),
+    load: () => app.load(),
+    render: () => app.render()
 };

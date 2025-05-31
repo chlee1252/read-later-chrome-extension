@@ -115,7 +115,8 @@ class ReadLaterBackground {
                 title: tab.title || 'Untitled',
                 url: tab.url,
                 addedAt: new Date().toISOString(),
-                read: false
+                read: false,
+                categoryId: 'uncategorized'
             };
 
             readingList.unshift(newItem);
@@ -157,7 +158,8 @@ class ReadLaterBackground {
                 title: linkTitle,
                 url: linkUrl,
                 addedAt: new Date().toISOString(),
-                read: false
+                read: false,
+                categoryId: 'uncategorized'
             };
 
             readingList.unshift(newItem);

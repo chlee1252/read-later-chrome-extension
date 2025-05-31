@@ -32,7 +32,10 @@ const UI = {
         return `
             <div class="item ${item.read ? 'read' : ''}" data-id="${item.id}">
                 <div class="item-header">
-                    <div class="item-title">${Utils.escapeHtml(item.title)}</div>
+                    <div class="item-title">
+                        ${CategoryUI.renderCategoryBadge(item.categoryId).replace('data-item-id="${item.categoryId}"', `data-item-id="${item.id}"`)}
+                        ${Utils.escapeHtml(item.title)}
+                    </div>
                     <div class="item-actions">
                         <button class="btn-small btn-toggle" data-id="${item.id}" title="${item.read ? '읽지않음' : '읽음'}으로 표시">
                             ${readIcon}
@@ -72,6 +75,9 @@ const UI = {
         
         // Add click handlers
         this.attachEvents();
+        
+        // Update category badges
+        CategoryUI.updateCategoryBadges();
     },
 
     attachEvents() {
