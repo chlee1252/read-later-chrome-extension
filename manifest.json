@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Read-Later",
+  "version": "1.0",
+  "description": "웹페이지를 쉽게 저장하고 나중에 읽을 수 있는 간단한 익스텐션",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "notifications",
+    "contextMenus"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "읽기 목록에 추가",
+    "default_icon": {
+      "16": "icons/icon16.svg",
+      "32": "icons/icon32.svg",
+      "48": "icons/icon48.svg",
+      "128": "icons/icon128.svg"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.svg",
+    "32": "icons/icon32.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon128.svg"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "simple-read-later",
+  "version": "1.0.0",
+  "description": "웹페이지를 쉽게 저장하고 나중에 읽을 수 있는 간단한 크롬 익스텐션",
+  "main": "background.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist",
+    "dev": "npm run build && npm run watch",
+    "watch": "node scripts/watch.js",
+    "icons": "./scripts/generate-icons.sh",
+    "zip": "npm run build && cd dist && zip -r ../simple-read-later.zip ."
+  },
+  "keywords": [
+    "chrome-extension",
+    "read-later",
+    "bookmark",
+    "productivity",
+    "whale-extension"
+  ],
+  "author": "GitHub Copilot",
+  "license": "MIT",
+  "devDependencies": {
+    "chokidar": "^3.5.3",
+    "fs-extra": "^11.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/simple-read-later.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/simple-read-later/issues"
+  },
+  "homepage": "https://github.com/your-username/simple-read-later#readme",
+  "dependencies": {
+    "build": "^0.1.4"
+  }
+}

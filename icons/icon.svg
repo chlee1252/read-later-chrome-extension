@@ -1,0 +1,24 @@
+<!-- SVG 아이콘 - 나중에 PNG로 변환할 수 있습니다 -->
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- 배경 원 -->
+  <circle cx="64" cy="64" r="60" fill="#007bff" stroke="#0056b3" stroke-width="2"/>
+  
+  <!-- 책 모양 -->
+  <rect x="32" y="40" width="64" height="48" rx="4" fill="white"/>
+  <rect x="36" y="44" width="56" height="40" rx="2" fill="#f8f9fa"/>
+  
+  <!-- 책갈피 -->
+  <polygon points="75,40 85,40 85,65 80,60 75,65" fill="#28a745"/>
+  
+  <!-- 책의 선들 -->
+  <line x1="40" y1="52" x2="72" y2="52" stroke="#666" stroke-width="1"/>
+  <line x1="40" y1="58" x2="88" y2="58" stroke="#666" stroke-width="1"/>
+  <line x1="40" y1="64" x2="72" y2="64" stroke="#666" stroke-width="1"/>
+  <line x1="40" y1="70" x2="65" y2="70" stroke="#666" stroke-width="1"/>
+  <line x1="40" y1="76" x2="80" y2="76" stroke="#666" stroke-width="1"/>
+  
+  <!-- 플러스 아이콘 (작게) -->
+  <circle cx="95" cy="95" r="12" fill="#28a745"/>
+  <line x1="89" y1="95" x2="101" y2="95" stroke="white" stroke-width="2"/>
+  <line x1="95" y1="89" x2="95" y2="101" stroke="white" stroke-width="2"/>
+</svg>
