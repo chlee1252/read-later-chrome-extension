@@ -29,6 +29,7 @@ class ReadLaterApp {
             
             await CategoryUI.renderCategoryFilter();
             this.setupEvents();
+            await this.loadAutoDeleteSettings(); // Load auto-delete settings on startup
             this.render();
             this.updateBadge();
         } catch (error) {
