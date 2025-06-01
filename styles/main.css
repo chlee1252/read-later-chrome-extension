@@ -831,7 +831,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px 16px;
+    padding: 12px 20px 10px;
     border-bottom: 1px solid var(--border-primary);
     flex-shrink: 0;
 }
@@ -844,7 +844,7 @@ body {
 }
 
 .modal-body {
-    padding: 20px 24px;
+    padding: 16px 20px;
     overflow-y: auto;
     flex: 1;
     min-height: 0;
@@ -909,7 +909,7 @@ body {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    padding: 16px 24px 20px;
+    padding: 10px 20px 12px;
     border-top: 1px solid var(--border-primary);
     flex-shrink: 0;
     background: var(--bg-primary);

@@ -69,6 +69,7 @@ class I18n {
                 
                 // Toast Messages
                 pageAdded: '페이지가 저장되었습니다',
+                saved: '저장되었습니다',
                 pageDuplicate: '이미 저장된 페이지입니다',
                 pageCannotSave: '이 페이지는 저장할 수 없습니다',
                 markedAsRead: '읽기완료로 변경되었습니다.',
@@ -192,6 +193,7 @@ class I18n {
                 
                 // Toast Messages
                 pageAdded: 'Page saved successfully',
+                saved: 'Saved',
                 pageDuplicate: 'Page already saved',
                 pageCannotSave: 'Cannot save this page',
                 markedAsRead: 'Marked as read',
