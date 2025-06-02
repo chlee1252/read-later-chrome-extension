@@ -67,6 +67,7 @@ npm run zip
 2. 브라우저 확장 프로그램 페이지로 이동:
    - Chrome: `chrome://extensions/`
    - Edge: `edge://extensions/`
+   - Whale: `whale://extensions/`
 3. "개발자 모드" 활성화
 4. "압축해제된 확장 프로그램 로드" 클릭
 5. `dist/` 폴더 선택
