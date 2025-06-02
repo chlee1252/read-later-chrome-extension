@@ -422,8 +422,8 @@ class ReadLaterBackground {
             // 알림 생성
             await chrome.notifications.create(`reminder_${itemId}`, {
                 type: 'basic',
-                iconUrl: 'icons/icon.svg',
-                title: '📚 Read Later Reminder',
+                iconUrl: 'icons/icon128.png',
+                title: '📚 ReadMinder',
                 message: item.reminder.message || `Time to read: ${item.title}`,
                 contextMessage: item.title,
                 buttons: [
