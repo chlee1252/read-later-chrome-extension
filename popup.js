@@ -296,6 +296,178 @@ class ReadLaterApp {
         }
     }
 
+    async showReminderModal(id) {
+        const item = this.items.find(i => i.id === id);
+        if (!item) return;
+
+        // Create modal HTML with proper overlay structure
+        const modalHTML = `
+            <div class="modal" id="reminderModal">
+                <div class="modal-content reminder-modal">
+                    <div class="modal-header">
+                        <h3>${window.i18n.t('reminderTitle')}</h3>
+                        <button class="btn-close" data-action="close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="reminder-item-info">
+                            <h4>${Utils.escapeHtml(item.title)}</h4>
+                            <p class="item-url" title="${Utils.escapeHtml(item.url)}">${Utils.escapeHtml(Utils.truncateUrl(item.url, 50))}</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="reminderMessage">${window.i18n.t('reminderMessage')}</label>
+                            <textarea id="reminderMessage" placeholder="${window.i18n.t('reminderMessagePlaceholder')}" 
+                                      value="${item.reminder?.message || ''}">${item.reminder?.message || ''}</textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reminderDate">${window.i18n.t('reminderDate')}</label>
+                                <input type="date" id="reminderDate" value="${item.reminder?.date || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="reminderTime">${window.i18n.t('reminderTime')}</label>
+                                <input type="time" id="reminderTime" value="${item.reminder?.time || ''}">
+                            </div>
+                        </div>
+                        ${item.reminder ? `
+                            <div class="current-reminder">
+                                <p><strong>${window.i18n.t('currentReminder')}</strong></p>
+                                <p>${new Date(item.reminder.scheduledTime).toLocaleString()}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="modal-footer">
+                        ${item.reminder ? `<button class="btn btn-delete" data-action="remove" data-id="${id}">${window.i18n.t('removeReminder')}</button>` : ''}
+                        <button class="btn" data-action="cancel">${window.i18n.t('cancel')}</button>
+                        <button class="btn btn-primary" data-action="save" data-id="${id}">${window.i18n.t('setReminder')}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Remove existing modal if any
+        const existingModal = document.getElementById('reminderModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Add modal to DOM
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('reminderDate').min = today;
+
+        // Add modal event listeners
+        const modal = document.getElementById('reminderModal');
+        
+        // Close modal when clicking overlay
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        });
+
+        // Handle button clicks
+        modal.addEventListener('click', (e) => {
+            const action = e.target.dataset.action;
+            const targetId = e.target.dataset.id;
+            
+            if (action === 'close' || action === 'cancel') {
+                modal.remove();
+                document.removeEventListener('keydown', handleEscape);
+            } else if (action === 'save' && targetId) {
+                this.saveReminder(targetId);
+            } else if (action === 'remove' && targetId) {
+                this.removeReminder(targetId);
+            }
+        });
+
+        // Add ESC key handler
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+
+        // Show modal and focus
+        setTimeout(() => {
+            document.getElementById('reminderMessage').focus();
+        }, 100);
+    }
+
+    async saveReminder(id) {
+        const message = document.getElementById('reminderMessage').value.trim();
+        const date = document.getElementById('reminderDate').value;
+        const time = document.getElementById('reminderTime').value;
+
+        if (!date || !time) {
+            UI.showToast(window.i18n.t('reminderDateTimeRequired'), 'error');
+            return;
+        }
+
+        const scheduledTime = new Date(`${date}T${time}`);
+        const now = new Date();
+
+        if (scheduledTime <= now) {
+            UI.showToast(window.i18n.t('reminderFutureTime'), 'error');
+            return;
+        }
+
+        const reminderData = {
+            message: message || window.i18n.t('reminderDefaultMessage'),
+            date,
+            time,
+            scheduledTime: scheduledTime.toISOString()
+        };
+
+        try {
+            // Save reminder to storage
+            await Storage.setReminder(id, reminderData);
+            
+            // Create Chrome alarm
+            await chrome.alarms.create(`reminder_${id}`, {
+                when: scheduledTime.getTime()
+            });
+
+            UI.showToast(window.i18n.t('reminderSet'), 'success');
+            
+            // Close modal
+            document.getElementById('reminderModal').remove();
+            
+            // Refresh UI
+            await this.load();
+            this.render();
+        } catch (error) {
+            console.error('Error setting reminder:', error);
+            UI.showToast(window.i18n.t('reminderError'), 'error');
+        }
+    }
+
+    async removeReminder(id) {
+        try {
+            // Remove from storage
+            await Storage.removeReminder(id);
+            
+            // Remove Chrome alarm
+            await chrome.alarms.clear(`reminder_${id}`);
+
+            UI.showToast(window.i18n.t('reminderRemoved'), 'success');
+            
+            // Close modal
+            document.getElementById('reminderModal').remove();
+            
+            // Refresh UI
+            await this.load();
+            this.render();
+        } catch (error) {
+            console.error('Error removing reminder:', error);
+            UI.showToast(window.i18n.t('reminderError'), 'error');
+        }
+    }
+
     render() {
         const unread = this.items.filter(item => !item.read).length;
         UI.updateCount(this.items.length, unread);
@@ -421,6 +593,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.App = {
         toggleRead: (id) => app.toggleRead(id),
         deleteItem: (id) => app.deleteItem(id),
+        showReminderModal: (id) => app.showReminderModal(id),
+        saveReminder: (id) => app.saveReminder(id),
+        removeReminder: (id) => app.removeReminder(id),
         load: () => app.load(),
         render: () => app.render(),
         updateCountDisplay: () => app.updateCountDisplay(),

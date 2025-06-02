@@ -179,5 +179,42 @@ const Storage = {
         }
         
         return { cleaned: 0, success: true, message: window.i18n.t('autoDeleteNoItems') };
+    },
+
+    async setReminder(id, reminderData) {
+        const items = await this.load();
+        const item = items.find(i => i.id === id);
+        
+        if (item) {
+            item.reminder = reminderData;
+            const saved = await this.save(items);
+            return { 
+                success: saved, 
+                message: saved ? window.i18n.t('reminderSet') : window.i18n.t('reminderError') 
+            };
+        }
+        
+        return { success: false, message: window.i18n.t('itemNotFound') };
+    },
+
+    async removeReminder(id) {
+        const items = await this.load();
+        const item = items.find(i => i.id === id);
+        
+        if (item && item.reminder) {
+            delete item.reminder;
+            const saved = await this.save(items);
+            return { 
+                success: saved, 
+                message: saved ? window.i18n.t('reminderRemoved') : window.i18n.t('reminderError') 
+            };
+        }
+        
+        return { success: false, message: window.i18n.t('reminderNotFound') };
+    },
+
+    async getItemsWithReminders() {
+        const items = await this.load();
+        return items.filter(item => item.reminder);
     }
 };

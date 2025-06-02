@@ -411,6 +411,24 @@ body {
     box-shadow: 0 2px 6px rgba(255, 59, 48, 0.2);
 }
 
+.btn-reminder {
+    border-color: #ff8c00;
+    color: #ff8c00;
+    background: rgba(255, 140, 0, 0.05);
+}
+
+.btn-reminder:hover {
+    background: #ff8c00;
+    color: white;
+    box-shadow: 0 2px 6px rgba(255, 140, 0, 0.2);
+}
+
+.btn-reminder.active {
+    background: #ff8c00;
+    color: white;
+    border-color: #ff8c00;
+}
+
 .item-url {
     font-size: 11px;
     color: var(--text-tertiary);
@@ -816,15 +834,63 @@ body {
 }
 
 .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        background: rgba(0, 0, 0, 0);
+    }
+    to {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.6);
+    }
+}
+
+.modal-content {
     background: var(--bg-primary);
     border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     max-width: 400px;
     width: 90%;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border-primary);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .modal {
+        background: rgba(0, 0, 0, 0.8);
+    }
+    
+    .modal-content {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
 }
 
 .modal-header {
@@ -913,6 +979,80 @@ body {
     border-top: 1px solid var(--border-primary);
     flex-shrink: 0;
     background: var(--bg-primary);
+}
+
+/* Reminder Modal Styles */
+.reminder-modal {
+    width: 450px;
+    max-width: 90vw;
+}
+
+.reminder-item-info {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+}
+
+.reminder-item-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.reminder-item-info .item-url {
+    margin: 0;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.current-reminder {
+    background: var(--bg-tertiary);
+    border-left: 3px solid #ff8c00;
+    padding: 12px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 20px;
+}
+
+.current-reminder p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.current-reminder strong {
+    color: var(--text-primary);
+}
+
+.form-group textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
 .form-group {

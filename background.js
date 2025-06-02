@@ -12,6 +12,7 @@ class ReadLaterBackground {
             this.setupContextMenu();
             this.updateBadge();
             this.setupAutoDeleteScheduler();
+            this.setupNotificationHandlers();
         });
 
         // Storage change detection for real-time badge updates
@@ -32,10 +33,12 @@ class ReadLaterBackground {
             this.addCurrentPageToList(tab);
         });
 
-        // 알람 이벤트 리스너 (자동 삭제용)
+        // 알람 이벤트 리스너 (자동 삭제 및 리마인더용)
         chrome.alarms.onAlarm.addListener((alarm) => {
             if (alarm.name === 'autoCleanup') {
                 this.runAutoCleanup();
+            } else if (alarm.name.startsWith('reminder_')) {
+                this.handleReminderAlarm(alarm);
             }
         });
 
@@ -398,6 +401,112 @@ class ReadLaterBackground {
                 }
             }
         };
+    }
+
+    // 리마인더 알람 처리
+    async handleReminderAlarm(alarm) {
+        try {
+            const itemId = alarm.name.replace('reminder_', '');
+            console.log(`🔔 Reminder alarm triggered for item: ${itemId}`);
+            
+            // 스토리지에서 아이템 조회
+            const result = await chrome.storage.local.get(['items']);
+            const items = result.items || [];
+            const item = items.find(i => i.id === itemId);
+            
+            if (!item || !item.reminder) {
+                console.log('❌ Item or reminder not found, skipping notification');
+                return;
+            }
+            
+            // 알림 생성
+            await chrome.notifications.create(`reminder_${itemId}`, {
+                type: 'basic',
+                iconUrl: 'icons/icon.svg',
+                title: '📚 Read Later Reminder',
+                message: item.reminder.message || `Time to read: ${item.title}`,
+                contextMessage: item.title,
+                buttons: [
+                    { title: 'Read Now' },
+                    { title: 'Dismiss' }
+                ]
+            });
+            
+            console.log(`✅ Reminder notification sent for: ${item.title}`);
+            
+        } catch (error) {
+            console.error('Error handling reminder alarm:', error);
+        }
+    }
+
+    // 알림 클릭 처리
+    setupNotificationHandlers() {
+        chrome.notifications.onClicked.addListener((notificationId) => {
+            if (notificationId.startsWith('reminder_')) {
+                const itemId = notificationId.replace('reminder_', '');
+                this.openItemFromReminder(itemId);
+                chrome.notifications.clear(notificationId);
+            }
+        });
+
+        chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+            if (notificationId.startsWith('reminder_')) {
+                const itemId = notificationId.replace('reminder_', '');
+                
+                if (buttonIndex === 0) { // Read Now
+                    this.openItemFromReminder(itemId);
+                } else if (buttonIndex === 1) { // Dismiss
+                    this.dismissReminder(itemId);
+                }
+                
+                chrome.notifications.clear(notificationId);
+            }
+        });
+    }
+
+    // 리마인더에서 아이템 열기
+    async openItemFromReminder(itemId) {
+        try {
+            const result = await chrome.storage.local.get(['items']);
+            const items = result.items || [];
+            const item = items.find(i => i.id === itemId);
+            
+            if (item) {
+                // 새 탭에서 URL 열기
+                await chrome.tabs.create({ url: item.url });
+                
+                // 읽음으로 표시
+                item.read = true;
+                item.readAt = new Date().toISOString();
+                
+                // 리마인더 제거
+                delete item.reminder;
+                
+                // 저장
+                await chrome.storage.local.set({ items });
+                
+                console.log(`📖 Opened and marked as read: ${item.title}`);
+            }
+        } catch (error) {
+            console.error('Error opening item from reminder:', error);
+        }
+    }
+
+    // 리마인더 해제
+    async dismissReminder(itemId) {
+        try {
+            const result = await chrome.storage.local.get(['items']);
+            const items = result.items || [];
+            const item = items.find(i => i.id === itemId);
+            
+            if (item && item.reminder) {
+                delete item.reminder;
+                await chrome.storage.local.set({ items });
+                console.log(`🔕 Reminder dismissed for: ${item.title}`);
+            }
+        } catch (error) {
+            console.error('Error dismissing reminder:', error);
+        }
     }
 
     // ...existing code...

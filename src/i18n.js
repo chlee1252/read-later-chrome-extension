@@ -6,7 +6,7 @@ class I18n {
         this.translations = {
             ko: {
                 // Header & Actions
-                appTitle: '📚 나중에 읽기',
+                appTitle: '📖 ReadMinder',
                 addPage: '현재 페이지 저장',
                 settings: '설정',
                 search: '검색...',
@@ -87,6 +87,30 @@ class I18n {
                 categoryCreated: '카테고리가 생성되었습니다',
                 categoryCreateFailed: '카테고리 생성에 실패했습니다',
                 
+                // Reminder Settings
+                setReminder: '리마인더 설정',
+                reminderTitle: '리마인더 설정',
+                reminderMessage: '알림 메시지',
+                reminderMessagePlaceholder: '읽을 시간입니다!',
+                reminderDate: '날짜',
+                reminderTime: '시간',
+                setReminderButton: '리마인더 설정',
+                removeReminder: '리마인더 제거',
+                reminderSet: '리마인더가 설정되었습니다',
+                reminderRemoved: '리마인더가 제거되었습니다',
+                reminderFailed: '리마인더 설정에 실패했습니다',
+                reminderError: '리마인더 처리 중 오류가 발생했습니다',
+                reminderDateTimeRequired: '날짜와 시간을 모두 설정해주세요',
+                reminderFutureTime: '미래 시간을 설정해주세요',
+                reminderDefaultMessage: '읽을 시간입니다!',
+                currentReminder: '현재 설정된 리마인더',
+                reminderNotFound: '리마인더를 찾을 수 없습니다',
+                itemNotFound: '항목을 찾을 수 없습니다',
+                cancel: '취소',
+                invalidDateTime: '올바른 날짜와 시간을 선택해주세요',
+                pastDateTime: '과거 시간은 설정할 수 없습니다',
+                reminderActive: '리마인더 설정됨',
+                
                 // Modal and existing item messages
                 alreadySavedPage: '이미 저장된 페이지',
                 alreadyReadPage: '이미 읽은 페이지',
@@ -130,7 +154,7 @@ class I18n {
             },
             en: {
                 // Header & Actions
-                appTitle: '📚 Read Later',
+                appTitle: '📖 ReadMinder',
                 addPage: 'Save Current Page',
                 settings: 'Settings',
                 search: 'Search...',
@@ -210,6 +234,30 @@ class I18n {
                 saveFailed: 'Failed to save settings',
                 categoryCreated: 'Category created',
                 categoryCreateFailed: 'Failed to create category',
+                
+                // Reminder Settings
+                setReminder: 'Set Reminder',
+                reminderTitle: 'Set Reminder',
+                reminderMessage: 'Reminder Message',
+                reminderMessagePlaceholder: 'Time to read!',
+                reminderDate: 'Date',
+                reminderTime: 'Time',
+                setReminderButton: 'Set Reminder',
+                removeReminder: 'Remove Reminder',
+                reminderSet: 'Reminder has been set',
+                reminderRemoved: 'Reminder has been removed',
+                reminderFailed: 'Failed to set reminder',
+                reminderError: 'An error occurred while processing reminder',
+                reminderDateTimeRequired: 'Please set both date and time',
+                reminderFutureTime: 'Please set a future time',
+                reminderDefaultMessage: 'Time to read!',
+                currentReminder: 'Current Reminder',
+                reminderNotFound: 'Reminder not found',
+                itemNotFound: 'Item not found',
+                cancel: 'Cancel',
+                invalidDateTime: 'Please select a valid date and time',
+                pastDateTime: 'Cannot set reminder for past time',
+                reminderActive: 'Reminder Set',
                 
                 // Modal and existing item messages
                 alreadySavedPage: 'Already Saved Page',

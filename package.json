@@ -8,7 +8,6 @@
     "clean": "rm -rf dist",
     "dev": "npm run build && npm run watch",
     "watch": "node scripts/watch.js",
-    "icons": "./scripts/generate-icons.sh",
     "zip": "npm run build && cd dist && zip -r ../simple-read-later.zip ."
   },
   "keywords": [

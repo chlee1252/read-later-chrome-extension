@@ -87,7 +87,7 @@ const CategoryUI = {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
-            <div class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h3>${window.i18n.t('addNewCategory')}</h3>
                     <button class="btn-close">×</button>
@@ -120,7 +120,7 @@ const CategoryUI = {
                 </div>
             </div>
         `;
-
+        
         document.body.appendChild(modal);
 
         let selectedIcon = '📁';
@@ -194,7 +194,7 @@ const CategoryUI = {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
-            <div class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h3>${window.i18n.t('changeCategory')}</h3>
                     <button class="btn-close">×</button>
@@ -245,7 +245,7 @@ const CategoryUI = {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
-            <div class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h3>${window.i18n.t('selectCategory')}</h3>
                     <button class="btn-close">×</button>
@@ -306,7 +306,7 @@ const CategoryUI = {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
-            <div class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h3>${window.i18n.t('alreadySavedPage')}</h3>
                     <button class="btn-close">×</button>
@@ -424,7 +424,7 @@ const CategoryUI = {
         const categoryName = categoryObj ? categoryObj.name : i18n.t('uncategorized');
         
         modal.innerHTML = `
-            <div class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h3>${i18n.t('alreadyReadPage')}</h3>
                     <button class="btn-close">×</button>
@@ -499,7 +499,7 @@ const CategoryUI = {
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
-            <div class="modal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h3>${window.i18n.t('changeCategory')}</h3>
                     <button class="btn-close">×</button>

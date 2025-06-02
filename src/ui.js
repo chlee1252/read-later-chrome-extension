@@ -41,6 +41,9 @@ const UI = {
                         </div>
                     </div>
                     <div class="item-actions">
+                        <button class="btn-small btn-reminder" data-id="${item.id}" title="${item.reminder ? window.i18n.t('reminderActive') : window.i18n.t('setReminder')}">
+                            ${item.reminder ? '🔔' : '⏰'}
+                        </button>
                         <button class="btn-small btn-toggle" data-id="${item.id}" title="${item.read ? window.i18n.t('markAsUnread') : window.i18n.t('markAsRead')}">
                             ${readIcon}
                         </button>
@@ -103,6 +106,16 @@ const UI = {
         });
 
         // Button event listeners
+        document.querySelectorAll('.btn-reminder').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-id');
+                if (window.App && window.App.showReminderModal) {
+                    window.App.showReminderModal(id);
+                }
+            });
+        });
+
         document.querySelectorAll('.btn-toggle').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
