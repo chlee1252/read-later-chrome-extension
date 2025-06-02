@@ -1,67 +1,100 @@
-# Read Later Extension - 완전히 새로 만든 깔끔한 버전 ✨
+# ReadMinder
 
-## 🎯 요구사항 완료
+ReadMinder는 웹 페이지를 저장하고 나중에 읽을 수 있는 브라우저 확장 프로그램으로, 카테고리 정리 및 알림 기능을 제공합니다.
 
-### 1. ✅ 디자인 완전히 새로 제작
-- **이전**: 복잡한 그라데이션, 과도한 애니메이션, 복잡한 색상
-- **현재**: 깔끔하고 단순한 iOS 스타일 디자인
+## 🛠️ 프로젝트 설정
 
-### 2. ✅ 필요없는 코드 모두 제거
-- 복잡한 CSS 애니메이션 제거
-- 불필요한 기능들 제거
-- 코드 단순화 및 최적화
+### 필수 요구사항
 
-### 3. ✅ 빌드 구조 정리
-- `scripts/` - 빌드 도구만 (build.js)
-- `src/` - 확장 모듈들 (storage.js, ui.js, utils.js)
-- 불필요한 스크립트 제거 (generate-icons.sh, setup-git-hooks.sh)
+- Node.js (v16.0.0 이상)
+- npm (Node.js에 포함됨)
+- Chrome, Edge 또는 기타 Chromium 기반 브라우저
 
-### 4. ✅ Simple Browser 문제 해결
-- 웹서버 실행: `python3 -m http.server 8080`
-- 접속: http://localhost:8080/popup.html
+### 설치 방법
 
-## 🎨 새로운 디자인 특징
+1. 저장소 복제
+   ```bash
+   git clone https://github.com/your-username/read-later.git
+   cd read-later
+   ```
 
-### 색상 팔레트
-- **배경**: 순백색 (#ffffff)
-- **텍스트**: 다크 그레이 (#333333, #1a1a1a)
-- **액센트**: iOS 블루 (#007aff)
-- **보조**: 라이트 그레이 (#f8f8f8, #e5e5e5)
+2. 의존성 설치
+   ```bash
+   npm install
+   ```
 
-### 레이아웃
-- **폭**: 380px (적당한 크기)
-- **여백**: 16px 기본, 12px 작은 여백
-- **둥글기**: 6px 일관된 border-radius
-
-## Browser Testing
-
-1. Go to browser extensions page (`chrome://extensions/`)
-2. Enable "Developer mode"  
-3. Click "Load unpacked extension"
-4. Select the `dist/` folder
-
-## Project Structure
+## 📂 프로젝트 구조
 
 ```
-├── manifest.json          # Extension configuration
-├── popup.html/css/js      # UI components  
-├── background.js          # Service worker
-├── scripts/               # Build automation
-├── icons/                 # SVG and PNG assets
-└── dist/                  # Build output (auto-generated)
+├── manifest.json          # 확장 프로그램 설정
+├── popup.html             # 메인 확장 UI
+├── popup.js               # 메인 UI 컨트롤러
+├── background.js          # 백그라운드 작업용 서비스 워커
+├── icons/                 # 확장 프로그램 아이콘
+├── scripts/               # 빌드 스크립트
+│   └── build.js           # 빌드 자동화
+├── src/                   # 핵심 모듈
+│   ├── categories.js      # 카테고리 관리
+│   ├── category-ui.js     # 카테고리 UI 컴포넌트
+│   ├── i18n.js            # 다국어 지원
+│   ├── storage.js         # 데이터 저장 작업
+│   ├── theme.js           # 테마 처리
+│   ├── ui.js              # 일반 UI 작업
+│   └── utils.js           # 유틸리티 함수
+├── styles/                # CSS 스타일
+│   └── main.css           # 메인 스타일시트
+└── dist/                  # 빌드 출력 (자동 생성)
 ```
 
-## Browser Compatibility
+## 🚀 개발 명령어
 
-Supports all Chromium-based browsers: Chrome, Edge, Opera, Brave, Whale, Vivaldi
+```bash
+# 확장 프로그램 빌드
+npm run build
 
-## Tech Stack
+# 빌드 결과물 정리
+npm run clean
 
-- Manifest V3 Chrome Extensions API
-- Vanilla JavaScript (ES6+)
-- Chrome Storage API for local data
-- Service Worker for background processing
+# 변경 감지 개발 모드
+npm run dev
 
-## Development Guidelines
+# 배포용 ZIP 패키지 생성
+npm run zip
+```
 
-See [.copilot-instructions.md](.copilot-instructions.md) for detailed coding standards and workflows.
+## 🧪 테스트
+1. 확장 프로그램 빌드: `npm run build`
+2. 브라우저 확장 프로그램 페이지로 이동:
+   - Chrome: `chrome://extensions/`
+   - Edge: `edge://extensions/`
+3. "개발자 모드" 활성화
+4. "압축해제된 확장 프로그램 로드" 클릭
+5. `dist/` 폴더 선택
+
+## 🔌 핵심 기능
+
+- **웹 페이지 저장**: 현재 탭을 나중에 읽기 위해 저장
+- **카테고리**: 저장된 페이지를 사용자 정의 카테고리로 정리
+- **읽음/읽지 않음 상태**: 페이지를 읽음/읽지 않음으로 표시
+- **자동 정리**: 읽은 항목의 자동 삭제 설정
+- **알림 시스템**: 저장된 페이지에 대한 알림 설정
+- **다크/라이트 테마**: 자동 또는 수동 테마 선택
+
+## 🔒 확장 프로그램 권한
+
+- `activeTab`: 현재 탭에 접근
+- `storage`: 로컬 데이터 저장
+- `tabs`: 탭 관리
+- `notifications`: 알림 표시
+- `contextMenus`: 컨텍스트 메뉴 항목 추가
+- `alarms`: 알림 일정 예약
+
+## 💻 브라우저 호환성
+
+모든 Chromium 기반 브라우저 지원:
+- Google Chrome
+- Microsoft Edge
+- Opera
+- Brave
+- 네이버 웨일
+- Vivaldi
