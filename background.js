@@ -505,6 +505,10 @@ class ReadLaterBackground {
             if (item && item.reminder) {
                 delete item.reminder;
                 await chrome.storage.local.set({ items });
+                
+                // 알람 제거
+                await chrome.alarms.clear(`reminder_${itemId}`);
+                
                 console.log(`🔕 Reminder dismissed for: ${item.title}`);
             }
         } catch (error) {
