@@ -300,6 +300,19 @@ class ReadLaterApp {
         const item = this.items.find(i => i.id === id);
         if (!item) return;
 
+        // 현재 날짜와 시간을 기본값으로 설정
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(now.getDate()); // 오늘 날짜로 설정
+
+        // 날짜 포맷: YYYY-MM-DD
+        const defaultDate = item.reminder?.date || tomorrow.toISOString().split('T')[0];
+        
+        // 시간 포맷: HH:MM
+        let defaultHours = now.getHours().toString().padStart(2, '0');
+        let defaultMinutes = now.getMinutes().toString().padStart(2, '0');
+        const defaultTime = item.reminder?.time || `${defaultHours}:${defaultMinutes}`;
+
         // Create modal HTML with proper overlay structure
         const modalHTML = `
             <div class="modal" id="reminderModal">
@@ -321,11 +334,11 @@ class ReadLaterApp {
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="reminderDate">${window.i18n.t('reminderDate')}</label>
-                                <input type="date" id="reminderDate" value="${item.reminder?.date || ''}">
+                                <input type="date" id="reminderDate" value="${defaultDate}">
                             </div>
                             <div class="form-group">
                                 <label for="reminderTime">${window.i18n.t('reminderTime')}</label>
-                                <input type="time" id="reminderTime" value="${item.reminder?.time || ''}">
+                                <input type="time" id="reminderTime" value="${defaultTime}">
                             </div>
                         </div>
                         ${item.reminder ? `
