@@ -12,8 +12,10 @@ class ReadLaterBackground {
             this.setupContextMenu();
             this.updateBadge();
             this.setupAutoDeleteScheduler();
-            this.setupNotificationHandlers();
         });
+        
+        // Set up notification handlers on every service worker start
+        this.setupNotificationHandlers();
 
         // Storage change detection for real-time badge updates
         chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -275,7 +277,7 @@ class ReadLaterBackground {
             const badgeText = unreadCount > 0 ? unreadCount.toString() : '';
             
             await chrome.action.setBadgeText({ text: badgeText });
-            await chrome.action.setBadgeBackgroundColor({ color: '#6366f1' }); // Modern indigo color
+            await chrome.action.setBadgeBackgroundColor({ color: '#007aff' }); // Use accent-blue from CSS
             
             // Optional: Set badge text color for better contrast
             if (chrome.action.setBadgeTextColor) {
@@ -441,6 +443,7 @@ class ReadLaterBackground {
 
     // 알림 클릭 처리
     setupNotificationHandlers() {
+        console.log('🔔 Setting up notification handlers');
         chrome.notifications.onClicked.addListener((notificationId) => {
             if (notificationId.startsWith('reminder_')) {
                 const itemId = notificationId.replace('reminder_', '');
